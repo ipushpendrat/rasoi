@@ -1,0 +1,7 @@
+{
+  "name": "rasoi",
+  "private": true,
+  "type": "module",
+  "scripts": { "check": "node scripts/check.mjs" },
+  "dependencies": { "web-push": "^3.6.7" }
+}
