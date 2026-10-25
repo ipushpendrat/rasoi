@@ -22,7 +22,7 @@ export default async (req) => {
     }
   }
 
-  const { action, me, row, settings, n, comment, image, subscription, reason, type, count, items, total, category, note } = await req.json();
+  const { action, me, row, settings, n, comment, image, subscription, reason, type, count, items, total, category, note, messages, member, file, text, remove } = await req.json();
   try {
     if (action === 'init') { await S.init(); return ok(); }
     const ctx = await A.load();
@@ -55,6 +55,8 @@ export default async (req) => {
       case 'spend': await A.addSpend(ctx, me, total, category, note); return ok();
       case 'bill': return ok(await A.addBill(ctx, me, image));
       case 'subscribe': await A.subscribe(ctx, me, subscription); return ok();
+      case 'chat': return ok(await A.chat(ctx, me, messages));
+      case 'dietPlan': return ok(await A.setDietPlan(ctx, me, member, { file, text, remove }));
       case 'testPush': return ok({ sent: await A.testPush(ctx, me) });
       default: return err('Unknown action', 400);
     }

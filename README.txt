@@ -22,6 +22,14 @@ Before 1pm: "I am not eating tonight", guests for dinner, "Cook is off today", "
 If nobody taps "cooked", the dish is marked cooked automatically at the next day's 12:00.
 Daily-use items in Settings > ALWAYS_STOCKED are never put on the shopping list and are not tracked.
 Pantry day 1: Pantry tab > "Add many at once", one item per line (toor dal 2 kg).
+Ask tab: AI chat for recipes, nutrition and swaps. Uses Google Search for real web sources and
+  adds a YouTube search link for recipes. Chat history stays on each phone.
+Diet plans: Family tab > each person > upload a PDF/photo or paste the plan. Gemini keeps a short
+  summary that every suggestion, recipe and chat answer follows. Applies from the next suggestion.
+Cooking time: every combo must fit Settings > MAX_COOK_MINUTES (default 120).
+
+AFTER UPDATING THE CODE
+  Setup > "Repair sheet tabs" once (adds the diet plan columns and the cooking-time setting).
 
 
 FILES
