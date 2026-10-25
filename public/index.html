@@ -2,84 +2,176 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#2E6A3A">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <title>Rasoi</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hind:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#EEF1F0;--card:#FFFFFF;--ink:#1D2321;--muted:#5D6662;--line:#D3D9D6;--haldi:#C98A06;--haldi-soft:#F5E4B8;--leaf:#2E6A3A;--chilli:#A3352B;color-scheme:light}
-@media (prefers-color-scheme:dark){:root{--bg:#131716;--card:#1B201F;--ink:#E8ECEA;--muted:#9AA39F;--line:#2D3432;--haldi:#E6AE38;--haldi-soft:#3A3018;--leaf:#74B884;--chilli:#E07A6E;color-scheme:dark}}
+/* Rasoi: Apple-style Liquid Glass. One bold element: today's dish on a glass plate over a saffron glow. */
+:root{
+  --canvas:#F2F2F7; --ink:#1C1C1E; --ink2:#3C3C43; --muted:#8E8E93; --hair:rgba(60,60,67,.14);
+  --glass:rgba(255,255,255,.62); --glass-strong:rgba(255,255,255,.82); --rim:rgba(255,255,255,.75);
+  --saffron:#FF9F0A; --saffron-ink:#C26A00; --leaf:#34C759; --leaf-ink:#1F8A3B; --chilli:#FF3B30; --sky:#0A84FF;
+  --glow1:rgba(255,159,10,.55); --glow2:rgba(255,94,58,.24); --glow3:rgba(52,199,89,.18);
+  --shadow:0 1px 1px rgba(0,0,0,.04),0 8px 30px rgba(31,24,10,.10);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --canvas:#000000; --ink:#F5F5F7; --ink2:#D1D1D6; --muted:#98989F; --hair:rgba(84,84,88,.45);
+  --glass:rgba(38,38,42,.55); --glass-strong:rgba(44,44,48,.82); --rim:rgba(255,255,255,.10);
+  --saffron:#FFA826; --saffron-ink:#FFB340; --leaf:#30D158; --leaf-ink:#30D158; --chilli:#FF453A; --sky:#0A84FF;
+  --glow1:rgba(255,159,10,.30); --glow2:rgba(255,69,58,.14); --glow3:rgba(48,209,88,.12);
+  --shadow:0 1px 1px rgba(0,0,0,.3),0 10px 34px rgba(0,0,0,.45);
+  color-scheme:dark;
+}}
+body.decided{--glow1:rgba(52,199,89,.34);--glow3:rgba(255,159,10,.22)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 Hind,"Noto Sans Devanagari",system-ui,sans-serif}
-.wrap{max-width:860px;margin:0 auto;padding:20px 18px 80px}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:10px;font-size:24px;font-weight:700}
-.thali{width:28px;height:28px;border-radius:50%;background:var(--haldi);box-shadow:inset 0 0 0 7px var(--haldi),inset 0 0 0 14px var(--card)}
-nav{display:flex;gap:2px;flex-wrap:wrap}
-nav button{background:none;border:0;padding:7px 13px;border-radius:999px;font:inherit;font-weight:500;color:var(--muted);cursor:pointer}
-nav button[aria-current=page]{background:var(--ink);color:var(--bg)}
-button{font:inherit;font-weight:600;border-radius:10px;padding:9px 16px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
-button.primary{background:var(--leaf);border-color:var(--leaf);color:var(--bg)}
-button:disabled{opacity:.45;cursor:not-allowed}
-:focus-visible{outline:3px solid var(--haldi);outline-offset:2px}
-input,select{font:inherit;width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
-label{display:block;font-size:14px;color:var(--muted);font-weight:500}
-label input,label select{margin-top:3px}
-h2{font-size:20px;margin:32px 0 8px}
-.dish{font-size:clamp(36px,8vw,60px);font-weight:700;line-height:1.02;letter-spacing:-.02em;margin:4px 0 12px}
-.meta{color:var(--muted);margin:0}
-.banner{background:var(--haldi-soft);border-radius:12px;padding:12px 16px;margin-top:20px}
-.opt{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:14px 0;border-top:1px solid var(--line)}
-.opt b{font-size:18px}
-.bar{grid-column:1/-1;height:8px;background:var(--line);border-radius:4px;overflow:hidden;margin-top:6px}
-.bar i{display:block;height:100%;background:var(--haldi)}
-.person{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:12px}
-.scroll{overflow-x:auto}
-table{width:100%;border-collapse:collapse}
-td,th{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
-th{font-size:14px;color:var(--muted);font-weight:500}
-td input{max-width:110px}
-.meter{height:14px;background:var(--line);border-radius:7px;overflow:hidden;margin:8px 0}
-.meter i{display:block;height:100%;background:var(--leaf)}
-.meter i.over{background:var(--chilli)}
-.todo{padding-left:20px}
-.todo li{margin:4px 0}
-.done{color:var(--leaf);font-weight:600}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;background:var(--canvas);color:var(--ink);
+  font:400 17px/1.47 -apple-system,BlinkMacSystemFont,"SF Pro Text","Kohinoor Devanagari","Noto Sans Devanagari","Segoe UI",Roboto,sans-serif;
+  letter-spacing:-.01em;-webkit-font-smoothing:antialiased;padding:env(safe-area-inset-top) 0 calc(110px + env(safe-area-inset-bottom))}
+body::before{content:"";position:fixed;inset:-20vmax;z-index:-1;pointer-events:none;transition:background .8s ease;
+  background:radial-gradient(38vmax 30vmax at 18% 8%,var(--glow1),transparent 70%),
+             radial-gradient(34vmax 28vmax at 92% 22%,var(--glow2),transparent 70%),
+             radial-gradient(40vmax 32vmax at 60% 96%,var(--glow3),transparent 70%)}
+.wrap{max-width:660px;margin:0 auto;padding:12px 18px 0}
+a{color:var(--sky)}
+:focus-visible{outline:3px solid var(--saffron);outline-offset:2px;border-radius:10px}
+
+/* top bar */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:17px;letter-spacing:-.02em}
+.thali{width:26px;height:26px;border-radius:50%;background:conic-gradient(from 200deg,var(--saffron),#FF6A3D,var(--saffron));box-shadow:inset 0 0 0 6px var(--glass-strong),0 2px 8px var(--glow1)}
+.top-actions{display:flex;gap:8px;align-items:center}
+.icon-btn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;padding:0}
+.icon-btn svg{width:20px;height:20px}
+
+/* glass material */
+.glass,.person,.opt,.msg.bot,.banner,.plate,nav#nav,.toast,table.list{
+  background:var(--glass);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
+  border:1px solid var(--rim);box-shadow:var(--shadow)}
+
+/* large titles */
+.hero{margin:18px 0 6px}
+.hero p{margin:0;color:var(--muted);font-size:15px;font-weight:500}
+.hero h1{margin:2px 0 0;font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.025em}
+h2{font-size:20px;font-weight:700;letter-spacing:-.02em;margin:30px 0 10px}
+
+/* the plate: today's dish */
+.plate{border-radius:30px;padding:22px 22px 20px;margin-top:16px;position:relative;overflow:hidden;isolation:isolate}
+.plate::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;
+  background:radial-gradient(circle,var(--glow1),transparent 70%);pointer-events:none;z-index:-1}
+.dish{font-size:clamp(32px,8.6vw,48px);font-weight:800;line-height:1.04;letter-spacing:-.035em;margin:6px 0 10px;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Kohinoor Devanagari","Noto Sans Devanagari",sans-serif}
+.meta{color:var(--muted);margin:0;font-size:15px}
+.pill-tag{display:inline-block;font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(255,159,10,.16);color:var(--saffron-ink)}
+.pill-tag.ok{background:rgba(52,199,89,.16);color:var(--leaf-ink)}
+
+/* options */
+.opt{border-radius:22px;padding:16px 18px;margin-top:12px;display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:start}
+.opt b{font-size:17px;font-weight:600;letter-spacing:-.015em}
+.opt > span:nth-child(2){font-size:15px;font-weight:600;color:var(--saffron-ink);white-space:nowrap}
+.bar{grid-column:1/-1;height:6px;background:var(--hair);border-radius:3px;overflow:hidden;margin-top:8px}
+.bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--saffron),#FF6A3D);transition:width .5s cubic-bezier(.2,.8,.2,1)}
+.choice{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;grid-column:1/-1}
+.choice button[aria-pressed=true]{background:var(--saffron);border-color:transparent;color:#1C1C1E}
+
+/* buttons: Apple pills */
+button{font:inherit;font-size:16px;font-weight:600;letter-spacing:-.01em;border-radius:999px;padding:10px 18px;cursor:pointer;
+  border:1px solid var(--rim);background:var(--glass-strong);color:var(--ink);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  transition:transform .12s ease,background .2s ease}
+button:active{transform:scale(.97)}
+button.primary{background:var(--ink);color:var(--canvas);border-color:transparent}
+@media (prefers-color-scheme:dark){button.primary{background:var(--saffron);color:#1C1C1E}}
+button:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.who{font-size:14px;padding:7px 13px}
+
+/* forms: inset grouped */
+label{display:block;font-size:13px;color:var(--muted);font-weight:500}
+input,select,textarea{font:inherit;font-size:16px;width:100%;margin-top:4px;padding:11px 13px;border-radius:12px;
+  border:1px solid var(--hair);background:var(--glass-strong);color:var(--ink);-webkit-appearance:none;appearance:none}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:32px}
+input[type=file]{padding:9px;font-size:14px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--saffron);box-shadow:0 0 0 4px rgba(255,159,10,.2)}
+.person{border-radius:24px;padding:18px;margin-top:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:14px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
-details{margin-top:12px}
-summary{cursor:pointer;font-weight:600}
-.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;max-width:90vw}
+.plan{border-top:1px solid var(--hair);margin-top:18px;padding-top:14px}
+
+/* lists and tables */
+.scroll{overflow-x:auto;border-radius:20px}
+table{width:100%;border-collapse:collapse;font-size:15px}
+.scroll table{background:var(--glass);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid var(--rim);border-radius:20px;overflow:hidden}
+td,th{text-align:left;padding:12px 14px;border-bottom:1px solid var(--hair);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+th{font-size:13px;color:var(--muted);font-weight:500}
+td input{max-width:96px;padding:7px 10px;margin:0}
+.todo{list-style:none;padding:0;margin:8px 0;border-radius:20px;overflow:hidden;background:var(--glass);border:1px solid var(--rim);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px)}
+.todo li{padding:12px 16px;border-bottom:1px solid var(--hair)}
+.todo li:last-child{border-bottom:0}
+details{margin-top:10px;border-radius:18px;background:var(--glass);border:1px solid var(--rim);padding:12px 16px}
+summary{cursor:pointer;font-weight:600;list-style:none}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";float:right;color:var(--muted);font-weight:400}
+details[open] summary::after{content:"\2212"}
+details ol{padding-left:20px;margin:10px 0 4px}
+details li{margin:6px 0}
+
+/* status */
+.banner{border-radius:20px;padding:14px 16px;margin-top:16px;font-size:15px}
+.done{color:var(--leaf-ink);font-weight:600}
 .err{color:var(--chilli)}
-.msg{border-radius:14px;padding:12px 14px;margin:10px 0;max-width:92%;overflow-wrap:anywhere}
-.msg.me{background:var(--ink);color:var(--bg);margin-left:auto;width:fit-content}
-.msg.bot{background:var(--card);border:1px solid var(--line)}
-.msg a{color:var(--leaf)}
-.yt{display:inline-block;margin-top:8px;font-weight:600}
-.plan{border-top:1px solid var(--line);margin-top:16px;padding-top:12px}
-textarea{font:inherit;width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);margin-top:3px}
-.choice{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
-.choice button[aria-pressed=true]{background:var(--haldi);border-color:var(--haldi);color:var(--ink)}
-.warn{background:var(--chilli);color:var(--bg);border-radius:12px;padding:12px 16px;margin:12px 0;font-weight:600}
-.who{font-size:14px;padding:6px 12px}
-fieldset{border:0;padding:0;margin:0}
-@media (prefers-reduced-motion:no-preference){.dish{animation:rise .5s ease-out}@keyframes rise{from{opacity:0;transform:translateY(8px)}}}
-</style></head>
+.warn{background:var(--chilli);color:#fff;border-radius:16px;padding:12px 16px;margin:12px 0;font-weight:600}
+.meter{height:10px;background:var(--hair);border-radius:5px;overflow:hidden;margin:10px 0}
+.meter i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--leaf),#5EE07A)}
+.meter i.over{background:linear-gradient(90deg,var(--chilli),#FF7A6E)}
+
+/* chat: message bubbles */
+.msg{border-radius:22px;padding:11px 15px;margin:8px 0;max-width:86%;overflow-wrap:anywhere;font-size:16px}
+.msg.me{background:linear-gradient(180deg,#FFB03A,var(--saffron));color:#1C1C1E;margin-left:auto;width:fit-content;border-bottom-right-radius:7px}
+.msg.bot{border-bottom-left-radius:7px}
+.msg a{color:var(--sky)}
+.yt{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-weight:600;text-decoration:none;color:var(--chilli)!important}
+.yt svg{width:20px;height:20px}
+
+/* floating tab bar */
+nav#nav{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;
+  display:flex;gap:2px;padding:6px;border-radius:999px;max-width:calc(100vw - 24px);background:var(--glass-strong);backdrop-filter:blur(40px) saturate(200%);-webkit-backdrop-filter:blur(40px) saturate(200%)}
+nav#nav button{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:60px;padding:7px 10px 6px;border:0;background:none;
+  backdrop-filter:none;-webkit-backdrop-filter:none;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:0}
+nav#nav button svg{width:23px;height:23px}
+nav#nav button[aria-current=page]{background:var(--glass-strong);color:var(--saffron-ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+
+/* toast: island at the top */
+.toast{position:fixed;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:30;
+  border-radius:999px;padding:11px 18px;font-size:15px;font-weight:600;max-width:92vw;text-align:center}
+.toast.err{color:var(--chilli)}
+
+@media (prefers-reduced-motion:no-preference){
+  .plate{animation:settle .6s cubic-bezier(.2,.8,.2,1)}
+  @keyframes settle{from{opacity:0;transform:translateY(10px) scale(.98)}}
+  .toast{animation:drop .35s cubic-bezier(.2,.9,.3,1.2)}
+  @keyframes drop{from{opacity:0;transform:translate(-50%,-14px) scale(.9)}}
+}
+@media (max-width:420px){nav#nav button{min-width:54px;padding:7px 6px 6px}}
+</style>
+</head>
 <body>
 <div class="wrap">
-  <header>
+  <div class="topbar">
     <div class="brand"><span class="thali" aria-hidden="true"></span>Rasoi</div>
-    <nav id="nav"></nav>
-  </header>
-  <main id="main"><p class="meta">Loading...</p></main>
+    <div class="top-actions" id="top"></div>
+  </div>
+  <main id="main"><p class="meta" style="margin-top:40px">Loading...</p></main>
 </div>
+<nav id="nav" aria-label="Sections"></nav>
 <script>
 const TABS = [['today', 'Today'], ['ask', 'Ask'], ['family', 'Family'], ['pantry', 'Pantry'], ['spend', 'Spend'], ['setup', 'Setup']];
 const FIELDS = [
@@ -140,15 +232,33 @@ async function act(body, done) {
 
 function busy(btn, text) { if (btn) { btn.disabled = true; btn.textContent = text; } }
 
+const svg = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`;
+const ICON = {
+  today: svg('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/>'),
+  ask: svg('<path d="M20 12a8 8 0 0 1-11.6 7.1L4 20l.9-4.1A8 8 0 1 1 20 12z"/>'),
+  family: svg('<circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5"/><circle cx="17" cy="9" r="2.6"/><path d="M16.5 14c2.3.2 4 1.7 4.5 4.5"/>'),
+  pantry: svg('<rect x="5" y="7" width="14" height="13" rx="3"/><path d="M7 4h10v3H7z"/><path d="M9 12h6"/>'),
+  spend: svg('<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/><path d="M16 15h2"/>'),
+  setup: svg('<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>'),
+  play: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor"/><path d="M10 9.2v5.6l4.8-2.8z" fill="#fff"/></svg>',
+};
+const TITLE = { today: 'Tonight’s dinner', ask: 'Ask Rasoi', family: 'Family', pantry: 'Pantry', spend: 'Spending', setup: 'Setup' };
+const longDate = () => new Date((data?.today || new Date().toISOString().slice(0, 10)) + 'T12:00:00').toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' });
+const hero = (title, sub = longDate()) => `<header class="hero"><p>${esc(sub)}</p><h1>${esc(title)}</h1></header>`;
+
 function render() {
-  $('#nav').innerHTML = TABS.map(([k, l]) => `<button data-tab="${k}" ${k === tab ? 'aria-current="page"' : ''}>${l}</button>`).join('')
-    + (me ? `<button class="who" onclick="me=null;store.del('rasoi-me');render()" title="Change person">${esc(me)}</button>` : '');
-  if (data.login) return $('#main').innerHTML = viewLogin(data.error);
-  if (data.error && !data.needsInit) return $('#main').innerHTML = `<p class="err">${esc(data.error)}</p><button onclick="refresh()">Try again</button>`;
+  $('#nav').innerHTML = TABS.filter(([k]) => k !== 'setup').map(([k, l]) =>
+    `<button data-tab="${k}" ${k === tab ? 'aria-current="page"' : ''}>${ICON[k]}<span>${l}</span></button>`).join('');
+  $('#top').innerHTML = (me ? `<button class="who" onclick="me=null;store.del('rasoi-me');render()" title="Change person">${esc(me)}</button>` : '')
+    + `<button class="icon-btn" data-tab="setup" aria-label="Setup" ${tab === 'setup' ? 'aria-current="page"' : ''}>${ICON.setup}</button>`;
+  const d = data?.days?.find(x => x.date === data.today);
+  document.body.classList.toggle('decided', ['decided', 'cooked'].includes(d?.status));
+  if (data.login) return $('#main').innerHTML = hero('Welcome', 'Rasoi') + viewLogin(data.error);
+  if (data.error && !data.needsInit) return $('#main').innerHTML = hero('Something went wrong', 'Rasoi') + `<p class="banner err">${esc(data.error)}</p><p><button onclick="refresh()">Try again</button></p>`;
   if (data.needsInit) tab = 'setup';
   else if (me && !meRow()) { me = null; store.del('rasoi-me'); }
-  if (!data.needsInit && !me && data.members.length && !['family', 'setup'].includes(tab)) return $('#main').innerHTML = viewWho();
-  $('#main').innerHTML = pushBanner() + { today: viewToday, ask: viewAsk, family: viewFamily, pantry: viewPantry, spend: viewSpend, setup: viewSetup }[tab]();
+  if (!data.needsInit && !me && data.members.length && !['family', 'setup'].includes(tab)) return $('#main').innerHTML = hero('Who’s using this phone?') + viewWho();
+  $('#main').innerHTML = hero(TITLE[tab]) + pushBanner() + { today: viewToday, ask: viewAsk, family: viewFamily, pantry: viewPantry, spend: viewSpend, setup: viewSetup }[tab]();
 }
 
 document.addEventListener('click', e => {
@@ -158,7 +268,7 @@ document.addEventListener('click', e => {
 
 // ---------- login ----------
 function viewLogin(msg) {
-  return `<h2>Household password</h2>${msg ? `<p class="err">${esc(msg)}</p>` : ''}
+  return `${msg ? `<p class="err">${esc(msg)}</p>` : ''}
     <form class="row person" onsubmit="login(event)"><label>Password<input name="pw" type="password" required autocomplete="current-password"></label>
     <button class="primary">Open Rasoi</button></form>`;
 }
@@ -169,10 +279,10 @@ const fmt = t => esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/^\s*[-*]
 function viewAsk() {
   const msgs = chat.map((m, i) => m.role === 'user' ? `<div class="msg me">${esc(m.text)}</div>`
     : `<div class="msg bot">${fmt(m.text)}
-        ${m.youtube ? `<br><a class="yt" href="${esc(m.youtube)}" target="_blank" rel="noopener">Watch videos on YouTube</a>` : ''}
+        ${m.youtube ? `<br><a class="yt" href="${esc(m.youtube)}" target="_blank" rel="noopener">${ICON.play}Watch videos on YouTube</a>` : ''}
         ${m.sources?.length ? `<p class="meta" style="margin-top:8px">Sources: ${m.sources.map(s => `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.title)}</a>`).join(', ')}</p>` : ''}
         <p class="row" style="margin-top:8px"><button class="who" onclick="shareMsg(this, ${i})">Share</button></p></div>`).join('');
-  return `<h2>Ask Rasoi</h2><p class="meta">Recipes, nutrition, swaps, what to make with what is at home. Answers follow everyone's allergies and diet plans.</p>
+  return `<p class="meta">Recipes, nutrition, swaps, what to make with what is at home. Answers follow everyone's allergies and diet plans.</p>
     <div id="chat">${msgs || '<p class="meta" style="margin-top:14px">Try: "High-protein veg breakfast ideas" or "How do I make dal makhani in the pressure cooker?"</p>'}</div>
     <form class="row" onsubmit="ask(event)" style="margin-top:14px"><label style="flex:1;min-width:220px">Your question<input name="q" required autocomplete="off" ${me ? '' : 'disabled placeholder="Choose who you are first"'}></label>
     <button class="primary" ${me ? '' : 'disabled'}>Ask</button></form>
@@ -199,7 +309,7 @@ async function shareMsg(btn, i) {
 
 // ---------- who is using this phone ----------
 function viewWho() {
-  return `<h2>Who is using this phone?</h2><p class="meta">Votes and notifications go to this person.</p>
+  return `<p class="meta">Votes and notifications go to this person.</p>
     <div class="choice">${data.members.map(m => `<button onclick="pick('${esc(m.name)}')">${esc(m.name)}${m.role === 'cook' ? ' (cook)' : ''}</button>`).join('')}</div>`;
 }
 function pick(name) { me = name; store.set('rasoi-me', name); render(); }
@@ -226,13 +336,15 @@ function viewToday() {
   const cook = meRow()?.role === 'cook';
   const d = data.days.find(x => x.date === data.today);
   let h = data.settings.LIVE === 'TRUE' ? '' : `<p class="banner">The agent is not live yet, so no notifications go out. Finish the checklist in <button data-tab="setup">Setup</button></p>`;
-  if (!d) h += `<p class="meta" style="margin-top:28px">${data.today}</p><div class="dish">No menu yet</div><p class="meta">The vote opens at 12:00 and closes at 13:00.</p>`;
+  if (!d) h += `<section class="plate"><span class="pill-tag">Vote opens at 12:00</span><div class="dish">Nothing decided yet</div><p class="meta">Three combos arrive at noon. Voting closes at 1pm.</p></section>`;
   else if (d.status === 'voting') {
     const opts = J(d.options, []), latest = {};
     data.votes.filter(v => v.date === d.date).forEach(v => latest[v.member] = +v.option);
     const tally = opts.map((_, i) => Object.values(latest).filter(n => n === i + 1).length);
     const lead = opts[tally.indexOf(Math.max(...tally))];
-    h += `<p class="meta" style="margin-top:28px">Voting until 13:00${d.mode === 'off' ? ', cook is off today' : ''}. Leading:</p><div class="dish">${esc(lead?.name)}</div>`;
+    const votes = Object.keys(latest).length;
+    h += `<section class="plate"><span class="pill-tag">Voting until 1pm${d.mode === 'off' ? ', cook is off' : ''}</span><div class="dish">${esc(lead?.name)}</div>
+      <p class="meta">${votes ? `Leading with ${votes} of ${data.family.length} votes in` : 'No votes yet. Pick the one you want below.'}</p></section><h2>Options</h2>`;
     h += opts.map((o, i) => `<div class="opt"><b>${i + 1}. ${esc(o.name)}</b><span>${tally[i]} vote${tally[i] === 1 ? '' : 's'}</span>
       <span class="meta">${esc(o.summary)} About ${esc(o.cook_minutes)} min, AED ${esc(o.est_cost_aed)}, ${esc(o.missing_items)} to buy.</span>
       <span class="bar"><i style="width:${data.family.length ? tally[i] / data.family.length * 100 : 0}%"></i></span>
@@ -240,10 +352,12 @@ function viewToday() {
   } else {
     const w = J(d.winner, {}), r = J(d.recipe, null), miss = J(d.missing, []);
     const label = { decided: 'Decided, cooking tonight', cooked: 'Cooked', postponed: 'Moved to tomorrow, cook is off', off: 'Cook is off today', skip: 'No cooking today, eating out' }[d.status] || d.status;
-    h += `<p class="meta" style="margin-top:28px">${esc(label)}</p><div class="dish">${esc(w.name || (d.status === 'skip' ? 'Eating out' : 'Cook is off'))}</div><p>${esc(w.summary)}</p>${r?.total_minutes ? `<p class="meta">Cooking time about ${esc(r.total_minutes)} min</p>` : ''}`;
+    h += `<section class="plate"><span class="pill-tag ${['decided', 'cooked'].includes(d.status) ? 'ok' : ''}">${esc(label)}</span><div class="dish">${esc(w.name || (d.status === 'skip' ? 'Eating out' : 'Cook is off'))}</div>
+      ${w.summary ? `<p class="meta">${esc(w.summary)}</p>` : ''}${r?.total_minutes ? `<p class="meta" style="margin-top:4px">About ${esc(r.total_minutes)} minutes for the cook</p>` : ''}`;
     if (r?.warning) h += `<p class="warn">${esc(r.warning)}</p>`;
     if (d.status === 'skip') h += `<p><button class="primary" onclick='sendToCook(this, ${esc(JSON.stringify(OFF_TEXT.skip))})'>Tell the cook</button></p>`;
-    if (d.status === 'decided') h += `<p><button class="primary" onclick="this.disabled=true;act({action:'cooked'},'Marked as cooked. Pantry updated.')">${cook ? 'बन गया / Cooked' : 'Mark as cooked'}</button></p>`;
+    if (d.status === 'decided') h += `<p style="margin:16px 0 0"><button class="primary" onclick="this.disabled=true;act({action:'cooked'},'Marked as cooked. Pantry updated.')">${cook ? 'बन गया / Cooked' : 'Mark as cooked'}</button></p>`;
+    h += '</section>';
     if (miss.length && d.status === 'decided') h += viewShopping(miss);
     if (r) {
       const en = `<details ${cook ? '' : 'open'}><summary>Recipe in English</summary><p>${esc(r.variants_en)}</p><ol>${(r.steps_en || []).map(s => `<li>${esc(s)}</li>`).join('')}</ol></details>`;
@@ -311,7 +425,7 @@ function viewRate() {
 // ---------- Family ----------
 function viewFamily() {
   const people = data.members.length ? data.members : [{ role: 'family' }];
-  return `<h2>Family and cook</h2><p class="meta">Allergies are never broken. Everything else can be changed here at any time.</p>`
+  return `<p class="meta">Allergies are never broken. Everything else can be changed here at any time.</p>`
     + people.map((m, i) => `<form class="person" data-i="${i}" onsubmit="saveMember(event)"><div class="grid">${FIELDS.map(([f, l, x]) => `<label>${l}${Array.isArray(x)
       ? `<select name="${f}">${x.map(o => `<option ${o === (m[f] || '') ? 'selected' : ''} value="${o}">${o || 'choose'}</option>`).join('')}</select>`
       : `<input name="${f}" value="${esc(m[f])}" placeholder="${esc(x || '')}" ${f === 'name' ? 'required' : ''}>`}</label>`).join('')}</div>
@@ -354,7 +468,7 @@ function saveMember(e) {
 // ---------- Pantry ----------
 function viewPantry() {
   const rows = [...data.pantry].sort((a, b) => a.item.localeCompare(b.item));
-  return `<h2>Pantry</h2><p class="meta">Bill photos add items here. Marking a dish as cooked takes its ingredients out.</p>
+  return `<p class="meta">Bill photos add items here. Marking a dish as cooked takes its ingredients out.</p>
     <form class="row person" onsubmit="addItem(event)">
       <label>Item<input name="item" required placeholder="e.g. toor dal"></label>
       <label>Quantity<input name="qty" required inputmode="decimal"></label>
