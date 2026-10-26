@@ -53,7 +53,7 @@ a{color:var(--sky)}
 .icon-btn svg{width:20px;height:20px}
 
 /* glass material */
-.glass,.person,.opt,.msg.bot,.banner,.plate,nav#nav,.toast,table.list{
+.person,.opt,.msg.bot,.banner,.plate,nav#nav,.toast{
   background:var(--glass);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
   border:1px solid var(--rim);box-shadow:var(--shadow)}
 
@@ -153,6 +153,35 @@ nav#nav button[aria-current=page]{background:var(--glass-strong);color:var(--saf
 .toast{position:fixed;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:30;
   border-radius:999px;padding:11px 18px;font-size:15px;font-weight:600;max-width:92vw;text-align:center}
 .toast.err{color:var(--chilli)}
+html,body{overscroll-behavior-y:contain}
+.plate .photo{margin:-22px -22px 16px;height:190px;background-size:cover;background-position:center;position:relative}
+.plate .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,var(--glass-strong))}
+.plate-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.ring{width:46px;height:46px;flex:none;position:relative}
+.ring svg{width:46px;height:46px;transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:700;letter-spacing:-.02em}
+.voters{display:flex;margin-top:12px}
+.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff;
+  border:2px solid var(--glass-strong);margin-right:-6px}
+.av.wait{background:var(--hair)!important;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 8px 7px 13px;border-radius:999px;font-size:15px;background:var(--glass);border:1px solid var(--rim)}
+.chip small{color:var(--muted)}
+.chip button{padding:2px 8px;font-size:13px}
+.soon{color:var(--chilli);font-weight:600}
+.skel{border-radius:22px;background:linear-gradient(90deg,var(--hair) 25%,var(--glass-strong) 50%,var(--hair) 75%);background-size:300% 100%;animation:shim 1.3s infinite linear;margin-top:14px}
+@keyframes shim{to{background-position:-150% 0}}
+.filebtn{display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:600;color:var(--ink);padding:10px 18px;border-radius:999px;cursor:pointer;
+  background:var(--glass-strong);border:1px solid var(--rim);margin-top:8px}
+.filebtn input{display:none}
+.filebtn:has(input:disabled){opacity:.4;cursor:not-allowed}
+.pin input{font-size:28px;letter-spacing:.4em;text-align:center;max-width:220px}
+.ptr{position:fixed;top:calc(10px + env(safe-area-inset-top));left:50%;z-index:25;display:flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:999px;font-size:14px;font-weight:600;color:var(--ink2);opacity:0;pointer-events:none;
+  transform:translate(-50%,-60px);background:var(--glass-strong);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid var(--rim);box-shadow:var(--shadow)}
+.ptr i{width:16px;height:16px;border-radius:50%;border:2px solid var(--hair);border-top-color:var(--saffron)}
+.ptr.spin i{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
 
 @media (prefers-reduced-motion:no-preference){
   .plate{animation:settle .6s cubic-bezier(.2,.8,.2,1)}
@@ -169,7 +198,7 @@ nav#nav button[aria-current=page]{background:var(--glass-strong);color:var(--saf
     <div class="brand"><span class="thali" aria-hidden="true"></span>Rasoi</div>
     <div class="top-actions" id="top"></div>
   </div>
-  <main id="main"><p class="meta" style="margin-top:40px">Loading...</p></main>
+  <main id="main" aria-busy="true"><div class="skel" style="height:18px;width:40%;margin-top:28px"></div><div class="skel" style="height:38px;width:70%;margin-top:10px"></div><div class="skel" style="height:240px;border-radius:30px"></div><div class="skel" style="height:96px"></div><div class="skel" style="height:96px"></div></main>
 </div>
 <nav id="nav" aria-label="Sections"></nav>
 <script>
@@ -204,23 +233,30 @@ const meRow = () => data.members?.find(m => m.name === me);
 const isIOS = /iPhone|iPad/.test(navigator.userAgent), standalone = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
 
 navigator.serviceWorker?.register('/sw.js');
+// After a new deploy the new service worker takes over; reload once so the new version shows.
+const hadController = !!navigator.serviceWorker?.controller;
+navigator.serviceWorker?.addEventListener('controllerchange', () => { if (hadController && !window.__reloading) { window.__reloading = true; location.reload(); } });
 
 function toast(msg, bad) {
   const t = document.createElement('div');
+  document.querySelectorAll('.toast').forEach(x => x.remove());
   t.className = 'toast' + (bad ? ' err' : ''); t.textContent = msg; t.setAttribute('role', 'status');
   document.body.append(t); setTimeout(() => t.remove(), 4000);
 }
 
 async function api(method, body) {
   if (!key) throw Object.assign(new Error(''), { login: true });
-  const r = await fetch('/api/app', { method, headers: { 'x-app-key': key || '', 'content-type': 'application/json' }, body: body && JSON.stringify({ ...body, me }) });
+  const r = await fetch('/api/app', { method, headers: { 'x-app-key': key || '', 'x-admin-pin': store.get('rasoi-admin') || '', 'x-member-token': store.get('rasoi-token') || '', 'content-type': 'application/json' }, body: body && JSON.stringify({ ...body, me }) });
   const j = await r.json().catch(() => ({ error: 'The server sent an unreadable reply. Try again.' }));
   if (r.status === 401) { store.del('rasoi-key'); key = null; throw Object.assign(new Error('Wrong password, try again'), { login: true }); }
-  if (!r.ok) throw Object.assign(new Error(j.error || 'Request failed'), { missing: j.missing });
+  if (j.pin) { store.del('rasoi-token'); pinFor = me; pinMode = 'enter'; }
+  if (!r.ok) throw Object.assign(new Error(j.error || 'Request failed'), { missing: j.missing, pin: j.pin });
   return j;
 }
 
+let lastRefresh = 0, pinFor = null, pinMode = 'enter';
 async function refresh() {
+  lastRefresh = Date.now();
   try { data = await api('GET'); } catch (e) { data = { error: e.message, login: e.login }; }
   render();
 }
@@ -249,7 +285,7 @@ const hero = (title, sub = longDate()) => `<header class="hero"><p>${esc(sub)}</
 function render() {
   $('#nav').innerHTML = TABS.filter(([k]) => k !== 'setup').map(([k, l]) =>
     `<button data-tab="${k}" ${k === tab ? 'aria-current="page"' : ''}>${ICON[k]}<span>${l}</span></button>`).join('');
-  $('#top').innerHTML = (me ? `<button class="who" onclick="me=null;store.del('rasoi-me');render()" title="Change person">${esc(me)}</button>` : '')
+  $('#top').innerHTML = (me ? `<button class="who" onclick="me=null;store.del('rasoi-me');store.del('rasoi-token');render()" title="Change person">${esc(me)}</button>` : '')
     + `<button class="icon-btn" data-tab="setup" aria-label="Setup" ${tab === 'setup' ? 'aria-current="page"' : ''}>${ICON.setup}</button>`;
   const d = data?.days?.find(x => x.date === data.today);
   document.body.classList.toggle('decided', ['decided', 'cooked'].includes(d?.status));
@@ -257,8 +293,10 @@ function render() {
   if (data.error && !data.needsInit) return $('#main').innerHTML = hero('Something went wrong', 'Rasoi') + `<p class="banner err">${esc(data.error)}</p><p><button onclick="refresh()">Try again</button></p>`;
   if (data.needsInit) tab = 'setup';
   else if (me && !meRow()) { me = null; store.del('rasoi-me'); }
-  if (!data.needsInit && !me && data.members.length && !['family', 'setup'].includes(tab)) return $('#main').innerHTML = hero('Who’s using this phone?') + viewWho();
+  if (pinFor || (!data.needsInit && !me && data.members.length && !['family', 'setup'].includes(tab))) return $('#main').innerHTML = hero('Who’s using this phone?') + viewWho();
   $('#main').innerHTML = hero(TITLE[tab]) + pushBanner() + { today: viewToday, ask: viewAsk, family: viewFamily, pantry: viewPantry, spend: viewSpend, setup: viewSetup }[tab]();
+  $('#main').removeAttribute('aria-busy');
+  loadPhotos();
 }
 
 document.addEventListener('click', e => {
@@ -309,10 +347,30 @@ async function shareMsg(btn, i) {
 
 // ---------- who is using this phone ----------
 function viewWho() {
+  if (pinFor) return viewPin();
   return `<p class="meta">Votes and notifications go to this person.</p>
-    <div class="choice">${data.members.map(m => `<button onclick="pick('${esc(m.name)}')">${esc(m.name)}${m.role === 'cook' ? ' (cook)' : ''}</button>`).join('')}</div>`;
+    <div class="choice">${data.members.filter(m => m.role !== 'cook').map(m => `<button onclick="pick('${esc(m.name)}')">${esc(m.name)}</button>`).join('')}</div>`;
 }
-function pick(name) { me = name; store.set('rasoi-me', name); render(); }
+function viewPin() {
+  const set = pinMode === 'set';
+  return `<p class="meta">${set ? `Hi ${esc(pinFor)}, choose a 4 to 6 digit PIN. You'll use it on any new phone.` : `Enter ${esc(pinFor)}'s PIN.`}</p>
+    <form class="person pin" onsubmit="submitPin(event)"><label>${set ? 'New PIN' : 'PIN'}<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,6}" maxlength="6" autocomplete="off" required autofocus></label>
+    <p class="row" style="margin-top:12px"><button class="primary">${set ? 'Save PIN' : 'Continue'}</button><button type="button" onclick="pinFor=null;render()">Back</button></p></form>`;
+}
+function pick(name) {
+  const m = data.members.find(x => x.name === name);
+  pinFor = name; pinMode = m?.has_pin ? 'enter' : 'set'; render();
+}
+async function submitPin(e) {
+  e.preventDefault();
+  const pin = new FormData(e.target).get('pin');
+  try {
+    me = pinFor;
+    const r = await api('POST', { action: pinMode === 'set' ? 'setPin' : 'verifyPin', pin });
+    store.set('rasoi-token', r.token); store.set('rasoi-me', me); pinFor = null;
+    await refresh(); toast(pinMode === 'set' ? 'PIN saved' : `Welcome, ${me}`);
+  } catch (err) { me = null; toast(err.message, true); }
+}
 
 // ---------- notifications ----------
 function pushBanner() {
@@ -333,60 +391,116 @@ async function enablePush(btn) {
 
 // ---------- Today ----------
 function viewToday() {
-  const cook = meRow()?.role === 'cook';
   const d = data.days.find(x => x.date === data.today);
-  let h = data.settings.LIVE === 'TRUE' ? '' : `<p class="banner">The agent is not live yet, so no notifications go out. Finish the checklist in <button data-tab="setup">Setup</button></p>`;
-  if (!d) h += `<section class="plate"><span class="pill-tag">Vote opens at 12:00</span><div class="dish">Nothing decided yet</div><p class="meta">Three combos arrive at noon. Voting closes at 1pm.</p></section>`;
+  let h = data.settings.LIVE === 'TRUE' ? '' : data.isAdmin
+    ? `<p class="banner">Rasoi is not live yet, so no notifications go out. Finish the checklist in <button data-tab="setup">Setup</button></p>`
+    : `<p class="banner">Rasoi is paused. The admin switches it on in Setup.</p>`;
+  if (!d) h += `<section class="plate"><span class="pill-tag">Vote opens at 12:00</span><div class="dish">Nothing decided yet</div><p class="meta">Three combos arrive at noon. Voting closes at 1pm.</p>
+    ${data.isAdmin ? `<p style="margin:16px 0 0"><button class="primary" onclick="busy(this,'Starting...');act({action:'startVote'},'Vote started')">Start the vote now</button></p>` : ''}</section>`;
   else if (d.status === 'voting') {
     const opts = J(d.options, []), latest = {};
     data.votes.filter(v => v.date === d.date).forEach(v => latest[v.member] = +v.option);
     const tally = opts.map((_, i) => Object.values(latest).filter(n => n === i + 1).length);
     const lead = opts[tally.indexOf(Math.max(...tally))];
     const votes = Object.keys(latest).length;
-    h += `<section class="plate"><span class="pill-tag">Voting until 1pm${d.mode === 'off' ? ', cook is off' : ''}</span><div class="dish">${esc(lead?.name)}</div>
-      <p class="meta">${votes ? `Leading with ${votes} of ${data.family.length} votes in` : 'No votes yet. Pick the one you want below.'}</p></section><h2>Options</h2>`;
+    h += `<section class="plate">${votes ? `<div class="photo" data-dish="${esc(lead?.name)}"></div>` : ''}
+      <div class="plate-head"><span class="pill-tag">Voting until 1pm${d.mode === 'off' ? ', cook is off' : ''}</span>${ring()}</div>
+      <div class="dish">${esc(lead?.name)}</div>
+      <p class="meta">${votes ? `Leading with ${votes} of ${data.family.length} votes in` : 'No votes yet. Pick the one you want below.'}</p>
+      ${voters(latest)}
+      ${data.isAdmin ? `<p style="margin:16px 0 0"><button onclick="busy(this,'Closing...');act({action:'closeVote'},'Vote closed')">Close the vote now</button></p>` : ''}</section><h2>Options</h2>`;
     h += opts.map((o, i) => `<div class="opt"><b>${i + 1}. ${esc(o.name)}</b><span>${tally[i]} vote${tally[i] === 1 ? '' : 's'}</span>
       <span class="meta">${esc(o.summary)} About ${esc(o.cook_minutes)} min, AED ${esc(o.est_cost_aed)}, ${esc(o.missing_items)} to buy.</span>
       <span class="bar"><i style="width:${data.family.length ? tally[i] / data.family.length * 100 : 0}%"></i></span>
-      ${cook ? '' : `<span class="choice"><button aria-pressed="${latest[me] === i + 1}" onclick="this.disabled=true;act({action:'vote',n:${i + 1}},'Vote saved')">${latest[me] === i + 1 ? 'Your vote' : 'Vote for this'}</button></span>`}</div>`).join('');
+      <span class="choice"><button aria-pressed="${latest[me] === i + 1}" onclick="this.disabled=true;act({action:'vote',n:${i + 1}},'Vote saved')">${latest[me] === i + 1 ? 'Your vote' : 'Vote for this'}</button></span></div>`).join('');
   } else {
     const w = J(d.winner, {}), r = J(d.recipe, null), miss = J(d.missing, []);
     const label = { decided: 'Decided, cooking tonight', cooked: 'Cooked', postponed: 'Moved to tomorrow, cook is off', off: 'Cook is off today', skip: 'No cooking today, eating out' }[d.status] || d.status;
-    h += `<section class="plate"><span class="pill-tag ${['decided', 'cooked'].includes(d.status) ? 'ok' : ''}">${esc(label)}</span><div class="dish">${esc(w.name || (d.status === 'skip' ? 'Eating out' : 'Cook is off'))}</div>
+    h += `<section class="plate">${w.name ? `<div class="photo" data-dish="${esc(w.name)}"></div>` : ''}<span class="pill-tag ${['decided', 'cooked'].includes(d.status) ? 'ok' : ''}">${esc(label)}</span><div class="dish">${esc(w.name || (d.status === 'skip' ? 'Eating out' : 'Cook is off'))}</div>
       ${w.summary ? `<p class="meta">${esc(w.summary)}</p>` : ''}${r?.total_minutes ? `<p class="meta" style="margin-top:4px">About ${esc(r.total_minutes)} minutes for the cook</p>` : ''}`;
     if (r?.warning) h += `<p class="warn">${esc(r.warning)}</p>`;
-    if (d.status === 'skip') h += `<p><button class="primary" onclick='sendToCook(this, ${esc(JSON.stringify(OFF_TEXT.skip))})'>Tell the cook</button></p>`;
-    if (d.status === 'decided') h += `<p style="margin:16px 0 0"><button class="primary" onclick="this.disabled=true;act({action:'cooked'},'Marked as cooked. Pantry updated.')">${cook ? 'बन गया / Cooked' : 'Mark as cooked'}</button></p>`;
+    if (d.status === 'skip') h += `<p><button class="primary" onclick='sendToCook(this, ${esc(JSON.stringify('आज खाना नहीं बनेगा, हम बाहर खा रहे हैं। No cooking today, we are eating out.'))})'>Tell the cook</button></p>`;
+    if (d.status === 'decided') h += `<p style="margin:16px 0 0"><button class="primary" onclick="this.disabled=true;act({action:'cooked'},'Marked as cooked. Pantry updated.')">Mark as cooked</button></p>`;
     h += '</section>';
     if (miss.length && d.status === 'decided') h += viewShopping(miss);
     if (r) {
-      const en = `<details ${cook ? '' : 'open'}><summary>Recipe in English</summary><p>${esc(r.variants_en)}</p><ol>${(r.steps_en || []).map(s => `<li>${esc(s)}</li>`).join('')}</ol></details>`;
-      const hi = `<details lang="hi" ${cook ? 'open' : ''}><summary>हिंदी में रेसिपी</summary><p>${esc(r.variants_hi)}</p><ol>${(r.steps_hi || []).map(s => `<li>${esc(s)}</li>`).join('')}</ol></details>`;
+      const en = `<details open><summary>Recipe in English</summary><p>${esc(r.variants_en)}</p><ol>${(r.steps_en || []).map(s => `<li>${esc(s)}</li>`).join('')}</ol></details>`;
+      const hi = `<details lang="hi"><summary>हिंदी में रेसिपी</summary><p>${esc(r.variants_hi)}</p><ol>${(r.steps_hi || []).map(s => `<li>${esc(s)}</li>`).join('')}</ol></details>`;
       const ing = `<details><summary>Ingredients</summary><ul class="todo">${(r.ingredients || []).map(i => `<li>${esc(i.item)} ${esc(i.qty)} ${esc(i.unit)}</li>`).join('')}</ul></details>`;
       const share = `<p class="row" style="margin-top:14px"><button class="primary" onclick='sendToCook(this, ${esc(JSON.stringify(cookText(w, r, 'hi')))})'>Send recipe to cook (Hindi)</button>
         <button onclick='sendToCook(this, ${esc(JSON.stringify(cookText(w, r, 'en')))})'>Send in English</button></p>`;
-      h += (cook ? hi + en + ing : en + hi + ing) + (d.status === 'decided' ? share : '');
+      h += en + hi + ing + (d.status === 'decided' ? share : '');
     }
   }
-  h += viewTonight(d, cook);
+  if (data.isAdmin && ['off', 'skip'].includes(d?.status)) h += `<p style="margin-top:14px"><button onclick="busy(this,'Starting...');act({action:'startVote'},'Vote started')">Start a vote anyway</button></p>`;
+  h += viewTonight(d);
   h += viewRate();
+  h += viewWishes();
+  h += viewFavourites();
   const past = data.days.filter(x => x.date < data.today && x.winner).slice(-7).reverse();
   if (past.length) h += `<h2>Last few days</h2><div class="scroll"><table><tr><th>Date</th><th>Dish</th><th>Status</th></tr>${past.map(x => `<tr><td>${esc(x.date)}</td><td>${esc(J(x.winner, {}).name)}</td><td>${esc(x.status)}</td></tr>`).join('')}</table></div>`;
   return h;
 }
 
-function viewTonight(d, cook) {
+function viewTonight(d) {
   if (d && !['voting', 'decided'].includes(d.status)) return '';
   const t = data.tonight, away = t.away.includes(me);
   let h = `<h2>Tonight</h2><p class="meta">${t.away.length ? esc(t.away.join(', ')) + ' not eating dinner. ' : 'Everyone is eating at home. '}${t.guests ? t.guests + ' guests. ' : ''}Changes before 1pm adjust the portions.</p>`;
-  if (!cook) h += `<div class="row" style="margin-top:10px">
+  h += `<div class="row" style="margin-top:10px">
     <button onclick="this.disabled=true;act({action:'tonight',type:'${away ? 'home' : 'away'}'},'Saved')">${away ? 'I am eating tonight after all' : 'I am not eating tonight'}</button>
     <label style="max-width:150px">Guests for dinner<input id="guests" type="number" min="0" max="30" value="${t.guests}"></label>
     <button onclick="this.disabled=true;act({action:'tonight',type:'guests',count:$('#guests').value},'Guests saved')">Save guests</button></div>`;
   h += `<div class="row" style="margin-top:14px">
-    <button onclick="if(confirm('Mark the cook as off today?')){this.disabled=true;act({action:'skipToday',reason:'cook_off'},'Day off noted')}">${cook ? 'आज छुट्टी / Day off today' : 'Cook is off today'}</button>
-    ${cook ? '' : `<button onclick="if(confirm('No cooking today? The cook will be told.')){this.disabled=true;act({action:'skipToday',reason:'skip'},'No cooking today')}">No cooking today (eating out)</button>`}</div>`;
+    <button onclick="if(confirm('Mark the cook as off today?')){this.disabled=true;act({action:'skipToday',reason:'cook_off'},'Day off noted')}">Cook is off today</button>
+    <button onclick="if(confirm('No cooking today?')){this.disabled=true;act({action:'skipToday',reason:'skip'},'No cooking today')}">No cooking today (eating out)</button></div>`;
   return h;
+}
+
+const hue = s => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 360, 7);
+const initials = n => n.split(/\s+/).map(x => x[0]).join('').slice(0, 2).toUpperCase();
+function voters(latest) {
+  return `<div class="voters" aria-label="Who has voted">${data.family.map(m => latest[m.name]
+    ? `<span class="av" title="${esc(m.name)} voted" style="background:hsl(${hue(m.name)} 62% 50%)">${esc(initials(m.name))}</span>`
+    : `<span class="av wait" title="${esc(m.name)} has not voted">${esc(initials(m.name))}</span>`).join('')}</div>`;
+}
+function ring() {
+  const left = Math.max(0, Date.parse(data.today + 'T09:00:00Z') - Date.now()), frac = Math.min(1, left / 36e5);
+  const c = 2 * Math.PI * 19;
+  return `<span class="ring" title="Time left to vote"><svg viewBox="0 0 46 46"><circle cx="23" cy="23" r="19" fill="none" stroke="var(--hair)" stroke-width="4"/>
+    <circle cx="23" cy="23" r="19" fill="none" stroke="var(--saffron)" stroke-width="4" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - frac)}"/></svg>
+    <b>${Math.ceil(left / 6e4)}m</b></span>`;
+}
+const wishCutoff = () => new Date(Date.parse(data.today) - 21 * 864e5).toISOString().slice(0, 10);
+function viewWishes() {
+  const open = data.wishes.filter(w => !w.status && w.date >= wishCutoff());
+  return `<h2>Dish wishes</h2><p class="meta">Wish for a dish and it comes up as a vote option within a few days.</p>
+    ${open.length ? `<div class="chips">${open.map(w => `<span class="chip">${esc(w.dish)} <small>${esc(w.member)}</small>
+      ${w.member === me || data.isAdmin ? `<button class="who" aria-label="Remove wish" onclick="act({action:'removeWish',row:${w._row}},'Wish removed')">&times;</button>` : ''}</span>`).join('')}</div>` : ''}
+    ${me && meRow()?.role !== 'cook' ? `<form class="row" style="margin-top:12px" onsubmit="event.preventDefault();act({action:'addWish',dish:this.dish.value},'Wish added')">
+      <label style="flex:1;min-width:200px">Your wish<input name="dish" maxlength="80" required placeholder="e.g. Rajma chawal"></label><button class="primary">Add wish</button></form>` : ''}`;
+}
+function viewFavourites() {
+  const by = {};
+  data.feedback.forEach(f => (by[f.dish] ||= []).push(+f.rating));
+  const fav = Object.entries(by).map(([dish, r]) => [dish, r.reduce((a, b) => a + b, 0) / r.length])
+    .filter(([, avg]) => avg >= 4).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  if (!fav.length) return '';
+  return `<h2>Family favourites</h2><div class="chips">${fav.map(([dish, avg]) => `<span class="chip">${esc(dish)} <small>${avg.toFixed(1)} of 5</small>
+    ${me ? `<button class="who" onclick="act({action:'addWish',dish:${esc(JSON.stringify(dish))}},'Added to wishes')">Again</button>` : ''}</span>`).join('')}</div>`;
+}
+async function loadPhotos() {
+  for (const el of document.querySelectorAll('.photo[data-dish]')) {
+    const q = el.dataset.dish.split('+')[0].trim(), k = 'rasoi-img:' + q.toLowerCase();
+    let url = store.get(k);
+    if (url == null) {
+      try {
+        const res = await fetch('https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=search&gsrlimit=1&prop=pageimages&piprop=thumbnail&pithumbsize=900&gsrsearch=' + encodeURIComponent(q + ' dish'));
+        url = Object.values((await res.json()).query?.pages || {})[0]?.thumbnail?.source || '';
+        store.set(k, url);
+      } catch { url = ''; }
+    }
+    if (/^https:\/\/upload\.wikimedia\.org\//.test(url)) el.style.backgroundImage = `url("${url}")`; else el.remove();
+  }
 }
 
 function viewShopping(miss) {
@@ -409,12 +523,12 @@ async function sendToCook(btn, text) {
   await navigator.clipboard.writeText(text);
   btn.textContent = 'Copied. Paste it in WhatsApp';
 }
-const OFF_TEXT = { skip: 'आज खाना नहीं बनेगा, हम बाहर खा रहे हैं। No cooking today, we are eating out.' };
 
 function viewRate() {
-  const last = [...data.days].reverse().find(d => d.status === 'cooked');
+  const last = [...data.days].reverse().find(d => d.date <= data.today && ['cooked', 'decided'].includes(d.status));
   const yesterday = new Date(Date.parse(data.today) - 864e5).toISOString().slice(0, 10);
-  if (!last || last.date < yesterday || !me || meRow()?.role === 'cook') return '';
+  if (!last || last.date < yesterday || !me) return '';
+  if (last.status === 'decided' && last.date === data.today && (new Date().getUTCHours() + 4) % 24 < 19) return '';
   if (data.feedback.some(f => f.date === last.date && f.member === me)) return '';
   const dish = J(last.winner, {}).name;
   return `<h2>How was ${esc(dish)}?</h2><form onsubmit="event.preventDefault()"><fieldset class="choice">
@@ -424,18 +538,30 @@ function viewRate() {
 
 // ---------- Family ----------
 function viewFamily() {
+  const admin = data.isAdmin;
   const people = data.members.length ? data.members : [{ role: 'family' }];
-  return `<p class="meta">Allergies are never broken. Everything else can be changed here at any time.</p>`
-    + people.map((m, i) => `<form class="person" data-i="${i}" onsubmit="saveMember(event)"><div class="grid">${FIELDS.map(([f, l, x]) => `<label>${l}${Array.isArray(x)
-      ? `<select name="${f}">${x.map(o => `<option ${o === (m[f] || '') ? 'selected' : ''} value="${o}">${o || 'choose'}</option>`).join('')}</select>`
-      : `<input name="${f}" value="${esc(m[f])}" placeholder="${esc(x || '')}" ${f === 'name' ? 'required' : ''}>`}</label>`).join('')}</div>
-      <button class="primary">Save ${esc(m.name || 'person')}</button>${m._row && m.role !== 'cook' ? viewPlan(m, i) : ''}</form>`).join('')
-    + `<p style="margin-top:16px"><button onclick="data.members.push({role:'family'});render()">Add a person</button></p>`;
+  const card = (m, i) => {
+    const mine = admin || m.name === me;
+    if (!mine) return `<div class="person"><b style="font-size:19px">${esc(m.name)}</b>${m.role === 'cook' ? ' <span class="pill-tag">cook</span>' : ''}
+      <p class="meta" style="margin-top:6px">${esc(m.diet || 'diet not set')}. Allergies: ${esc(m.allergies || 'not set')}${m.diet_plan ? '. Has a diet plan' : ''}.</p></div>`;
+    const locked = f => !admin && (f === 'name' || f === 'role');
+    return `<form class="person" data-i="${i}" onsubmit="saveMember(event)"><div class="grid">${FIELDS.map(([f, l, x]) => `<label>${l}${Array.isArray(x)
+      ? `<select name="${f}" ${locked(f) ? 'disabled' : ''}>${x.map(o => `<option ${o === (m[f] || '') ? 'selected' : ''} value="${o}">${o || 'choose'}</option>`).join('')}</select>`
+      : `<input name="${f}" value="${esc(m[f])}" placeholder="${esc(x || '')}" ${f === 'name' ? 'required' : ''} ${locked(f) ? 'disabled' : ''}>`}</label>`).join('')}</div>
+      <p class="row"><button class="primary">Save ${esc(m.name || 'person')}</button>
+      ${m.name === me ? `<button type="button" onclick="changePin()">Change my PIN</button>` : ''}
+      ${admin && m.has_pin && m.name !== me ? `<button type="button" onclick="if(confirm('Reset ${esc(m.name)}\u2019s PIN? They will choose a new one next time.'))act({action:'resetPin',member:data.members[${i}].name},'PIN reset')">Reset PIN</button>` : ''}</p>
+      ${m._row && m.role !== 'cook' ? viewPlan(m, i) : ''}</form>`;
+  };
+  return `<p class="meta">${admin ? 'You are the admin: you can add people and edit anyone.' : 'Edit your own card. Allergies are never broken by any suggestion.'}</p>`
+    + people.map(card).join('')
+    + (admin ? `<p style="margin-top:16px"><button onclick="data.members.push({role:'family'});render()">Add a person</button></p>` : '');
 }
+function changePin() { pinFor = me; pinMode = 'set'; render(); }
 function viewPlan(m, i) {
   return `<div class="plan"><b>Diet plan</b>
     ${m.diet_plan ? `<p class="meta">Updated ${esc(m.diet_plan_updated)}. Suggestions and answers follow this.</p><p>${fmt(m.diet_plan)}</p>` : '<p class="meta">No diet plan yet. Upload one from a dietitian or app, or paste it.</p>'}
-    <label style="margin-top:8px">Upload plan (PDF or photo)<input type="file" accept="application/pdf,image/*" onchange="planFile(this, ${i})"></label>
+    <label class="filebtn">Upload plan (PDF or photo)<input type="file" accept="application/pdf,image/*" onchange="planFile(this, ${i})"></label>
     <label style="margin-top:8px">Or paste it<textarea id="plan${i}" rows="4" placeholder="e.g. 1500 kcal, high protein, max 2 rotis at dinner, no fried food"></textarea></label>
     <p class="row" style="margin-top:8px"><button type="button" onclick="planText(this, ${i})">Save pasted plan</button>
     ${m.diet_plan ? `<button type="button" onclick="if(confirm('Remove this diet plan?'))act({action:'dietPlan',member:data.members[${i}].name,remove:true},'Plan removed')">Remove plan</button>` : ''}</p></div>`;
@@ -466,23 +592,69 @@ function saveMember(e) {
 }
 
 // ---------- Pantry ----------
+let scanItems = null;
 function viewPantry() {
-  const rows = [...data.pantry].sort((a, b) => a.item.localeCompare(b.item));
-  return `<p class="meta">Bill photos add items here. Marking a dish as cooked takes its ingredients out.</p>
+  const soonDate = new Date(Date.parse(data.today) + 3 * 864e5).toISOString().slice(0, 10);
+  const rows = [...data.pantry].sort((a, b) => (a.use_by || '9') .localeCompare(b.use_by || '9') || a.item.localeCompare(b.item));
+  const soon = rows.filter(p => p.use_by && p.use_by <= soonDate && +p.qty > 0);
+  return `<p class="meta">Bills, fridge photos and "cooked" keep this up to date. Items with a use-by date are cooked first.</p>
+    ${soon.length ? `<div class="banner"><b>Use first:</b> ${soon.map(p => `${esc(p.item)} (${esc(p.use_by)})`).join(', ')}</div>` : ''}
+    ${viewWeekly()}
+    <h2>Scan the fridge</h2><p class="meta">Take a photo of the fridge or a shelf. You check the list before anything is added.</p>
+    <label class="filebtn">Take a photo<input type="file" accept="image/*" capture="environment" onchange="scanPhoto(this)" ${me ? '' : 'disabled'}></label>
+    ${scanItems ? viewScan() : ''}
+    <h2>Add items</h2>
     <form class="row person" onsubmit="addItem(event)">
       <label>Item<input name="item" required placeholder="e.g. toor dal"></label>
       <label>Quantity<input name="qty" required inputmode="decimal"></label>
       <label>Unit<select name="unit">${['kg', 'g', 'l', 'ml', 'pcs', 'pack'].map(u => `<option>${u}</option>`).join('')}</select></label>
       <label>Type<select name="category"><option value="fresh">fresh</option><option value="staple">staple</option></select></label>
+      <label>Use by (optional)<input name="use_by" type="date"></label>
       <button class="primary">Add item</button></form>
     <form class="person" onsubmit="addBulk(event)">
-      <label>Add many at once, one item per line<textarea name="lines" rows="6" placeholder="toor dal 2 kg&#10;basmati rice 5 kg&#10;paneer 400 g&#10;eggs 12" style="width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);margin-top:3px"></textarea></label>
+      <label>Add many at once, one item per line<textarea name="lines" rows="6" placeholder="toor dal 2 kg&#10;basmati rice 5 kg&#10;paneer 400 g&#10;eggs 12"></textarea></label>
       <div class="row" style="margin-top:10px"><label>Type<select name="category"><option value="staple">staple</option><option value="fresh">fresh</option></select></label>
       <button class="primary">Add all</button></div></form>
-    ${rows.length ? `<div class="scroll"><table><tr><th>Item</th><th>Quantity</th><th>Unit</th><th>Type</th><th>Updated</th></tr>
-      ${rows.map(p => `<tr><td>${esc(p.item)}</td><td><input aria-label="Quantity of ${esc(p.item)}" value="${esc(p.qty)}" inputmode="decimal" onchange="setQty(${p._row}, this.value)"></td><td>${esc(p.unit)}</td><td>${esc(p.category)}</td><td class="meta">${esc(p.updated_at)}</td></tr>`).join('')}
-    </table></div>` : '<p class="meta">The pantry is empty. Add items above or add a bill photo in Spend.</p>'}`;
+    <h2>In the kitchen</h2>
+    ${rows.length ? `<div class="scroll"><table><tr><th>Item</th><th>Quantity</th><th>Unit</th><th>Use by</th></tr>
+      ${rows.map(p => `<tr><td>${esc(p.item)}</td><td><input aria-label="Quantity of ${esc(p.item)}" value="${esc(p.qty)}" inputmode="decimal" onchange="setField(${p._row}, 'qty', this.value)"></td><td>${esc(p.unit)}</td>
+        <td><input type="date" aria-label="Use by for ${esc(p.item)}" value="${esc(p.use_by)}" class="${p.use_by && p.use_by <= soonDate ? 'soon' : ''}" style="max-width:150px" onchange="setField(${p._row}, 'use_by', this.value)"></td></tr>`).join('')}
+    </table></div>` : '<p class="meta">The pantry is empty. Add items above, scan the fridge, or add a bill photo in Spend.</p>'}`;
 }
+function setField(row, f, v) { act({ action: 'savePantry', row: { ...data.pantry.find(p => p._row === row), [f]: v } }, 'Saved'); }
+
+function viewWeekly() {
+  const last = [...data.lists].reverse().find(l => l.kind === 'weekly');
+  const w = last && J(last.data, null);
+  const text = w ? 'Weekly list\n' + w.items.map(i => `- ${i.item} ${i.qty} ${i.unit}${i.note ? ` (${i.note})` : ''}`).join('\n') : '';
+  return `<h2>Weekly shopping list</h2><p class="meta">One order for the week, based on the pantry, wishes and what usually gets cooked.</p>
+    ${w ? `<p class="meta" style="margin-top:8px">Made ${esc(last.date)}. About AED ${esc(w.est_total_aed)}. Likely: ${esc(w.likely_dishes.join(', '))}.</p>
+      <ul class="todo">${w.items.map(i => `<li>${esc(i.item)} ${esc(i.qty)} ${esc(i.unit)}${i.note ? ` <span class="meta">(${esc(i.note)})</span>` : ''}</li>`).join('')}</ul>
+      <p class="row"><button onclick='sendToCook(this, ${esc(JSON.stringify(text))})'>Share list</button>` : '<p class="row" style="margin-top:10px">'}
+    <button class="primary" ${me ? '' : 'disabled'} onclick="busy(this,'Planning the week...');act({action:'weeklyList'},'Weekly list ready')">${w ? 'Make a new list' : 'Make this week\u2019s list'}</button></p>`;
+}
+
+async function scanPhoto(input) {
+  const f = input.files[0]; if (!f) return;
+  input.disabled = true; toast('Looking at the photo...');
+  const r = await act({ action: 'scanPantry', image: { mime: 'image/jpeg', data: await photoB64(f) } });
+  if (r) { scanItems = r.items.map(i => ({ ...i, keep: true })); render(); if (!scanItems.length) toast('No food items found. Try a closer photo.', true); }
+}
+function viewScan() {
+  if (!scanItems.length) return '';
+  return `<div class="person"><b>Found ${scanItems.length} items</b><p class="meta">Untick anything wrong and fix the amounts.</p>
+    <div class="scroll" style="margin-top:10px"><table><tr><th></th><th>Item</th><th>Quantity</th><th>Unit</th></tr>
+    ${scanItems.map((it, i) => `<tr><td><input type="checkbox" style="width:auto" ${it.keep ? 'checked' : ''} onchange="scanItems[${i}].keep=this.checked" aria-label="Keep ${esc(it.item)}"></td>
+      <td><input value="${esc(it.item)}" onchange="scanItems[${i}].item=this.value" style="max-width:none"></td>
+      <td><input value="${esc(it.qty)}" inputmode="decimal" onchange="scanItems[${i}].qty=this.value"></td><td>${esc(it.unit)}</td></tr>`).join('')}</table></div>
+    <p class="row" style="margin-top:12px"><button class="primary" onclick="addScanned(this)">Add to pantry</button><button onclick="scanItems=null;render()">Discard</button></p></div>`;
+}
+async function addScanned(btn) {
+  busy(btn, 'Adding...');
+  const r = await act({ action: 'pantryBulk', items: scanItems.filter(i => i.keep) });
+  if (r) { scanItems = null; render(); toast(`Added ${r.added} new, updated ${r.updated}`); }
+}
+
 const UNITS = [[/^(kg|kgs|kilo)$/, 'kg'], [/^(g|gm|gms|grams?)$/, 'g'], [/^(l|ltr|litres?|liters?)$/, 'l'], [/^(ml)$/, 'ml'], [/^(packs?|packets?|pkts?)$/, 'pack'], [/^(pcs?|pieces?|nos?)$/, 'pcs']];
 function parseLines(text, category) {
   return text.split('\n').map(l => l.trim()).filter(Boolean).map(l => {
@@ -499,7 +671,7 @@ async function addBulk(e) {
   if (r) toast(`Added ${r.added} new, updated ${r.updated}`);
 }
 function addItem(e) { e.preventDefault(); act({ action: 'savePantry', row: Object.fromEntries(new FormData(e.target)) }, 'Item added'); }
-function setQty(row, qty) { act({ action: 'savePantry', row: { ...data.pantry.find(p => p._row === row), qty } }, 'Quantity saved'); }
+
 
 // ---------- Spend ----------
 function viewSpend() {
@@ -510,7 +682,7 @@ function viewSpend() {
     <div class="meter" role="img" aria-label="${Math.round(pct)}% of weekly budget"><i class="${spent > limit ? 'over' : ''}" style="width:${pct}%"></i></div>
     <p class="meta">Fresh items from the last 7 days, plus staples averaged over ${esc(data.settings.STAPLES_SPREAD_WEEKS || 4)} weeks.</p>
     <h2>Add a bill</h2><p class="meta">Take a straight photo of the whole bill. Items go into the pantry and the amount into the budget.</p>
-    <label class="row"><input type="file" accept="image/*" capture="environment" onchange="billPhoto(this)" ${me ? '' : 'disabled'}></label>
+    <label class="filebtn">Photo of the bill<input type="file" accept="image/*" capture="environment" onchange="billPhoto(this)" ${me ? '' : 'disabled'}></label>
     <p class="meta" id="billState"></p>
     <h2>Spent without a bill</h2><form class="row person" onsubmit="addSpend(event)">
       <label>Amount (AED)<input name="total" type="number" min="1" step="0.5" required></label>
@@ -530,12 +702,26 @@ async function billPhoto(input) {
 }
 
 // ---------- Setup ----------
+function viewAdminLogin() {
+  return `<p class="meta">Setup, settings, Go live and Pause are for the admin${data.adminEmail ? ` (${esc(data.adminEmail)})` : ''}.</p>
+    <form class="row person" onsubmit="adminLogin(event)"><label>Admin PIN<input name="pin" type="password" inputmode="numeric" autocomplete="off" required></label>
+    <button class="primary">Unlock admin</button></form>`;
+}
+async function adminLogin(e) {
+  e.preventDefault();
+  store.set('rasoi-admin', new FormData(e.target).get('pin'));
+  await refresh();
+  if (!data.isAdmin) { store.del('rasoi-admin'); render(); toast('That PIN is not right.', true); } else toast('Admin unlocked on this device');
+}
+function adminLogout() { store.del('rasoi-admin'); refresh().then(() => toast('Admin locked on this device')); }
+
 function viewSetup() {
+  if (!data.isAdmin) return viewAdminLogin();
   if (data.needsInit) return `<h2>Connect the Google Sheet</h2><p class="err">${esc(data.error)}</p>
     <p>Share the sheet with the service account email, add the environment variables in Netlify, then create the tabs.</p>
     <button class="primary" onclick="busy(this,'Creating...');act({action:'init'},'Sheet tabs created')">Create sheet tabs</button>`;
   const live = data.settings.LIVE === 'TRUE', miss = data.readiness;
-  return `<h2>Go-live checklist</h2>
+  return `<p class="row"><span class="pill-tag ok">Admin</span><button class="who" onclick="adminLogout()">Lock admin on this device</button></p><h2>Go-live checklist</h2>
     ${miss.length ? `<ul class="todo">${miss.map(m => `<li>${esc(m)}</li>`).join('')}</ul>` : '<p class="done">Everything is ready.</p>'}
     <p class="row">${live ? `<span class="done">Live. The vote opens daily at 12:00.</span><button onclick="act({action:'pause'},'Paused')">Pause</button>`
       : `<button class="primary" ${miss.length ? 'disabled' : ''} onclick="act({action:'goLive'},'Rasoi is live')">Go live</button>`}</p>
@@ -550,6 +736,54 @@ function viewSetup() {
 }
 async function runPreview(b) { busy(b, 'Thinking...'); const r = await act({ action: 'preview' }); if (r) { preview = r.options; render(); } }
 function saveSettings(e) { e.preventDefault(); act({ action: 'saveSettings', settings: Object.fromEntries(new FormData(e.target)) }, 'Settings saved'); }
+
+// ---------- staying fresh in the home-screen app (no browser reload there) ----------
+const typing = () => /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName);
+// Back to the app: refresh if it has been 20 s or more.
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible' && Date.now() - lastRefresh > 20000 && !typing()) refresh(); });
+// While a vote is open, keep the counts live.
+setInterval(() => {
+  const d = data?.days?.find(x => x.date === data.today);
+  if (document.visibilityState === 'visible' && d?.status === 'voting' && !typing() && !document.querySelector('.ptr.spin')) refresh();
+}, 30000);
+
+// Pull down from the top to refresh.
+const ptr = document.createElement('div'); ptr.className = 'ptr'; ptr.innerHTML = '<i></i><span>Pull to refresh</span>'; document.body.append(ptr);
+let startY = null, pull = 0;
+addEventListener('touchstart', e => { startY = scrollY <= 0 && e.touches.length === 1 ? e.touches[0].clientY : null; pull = 0; }, { passive: true });
+addEventListener('touchmove', e => {
+  if (startY == null) return;
+  pull = Math.max(0, Math.min(140, (e.touches[0].clientY - startY) * 0.55));
+  ptr.style.opacity = Math.min(1, pull / 60);
+  ptr.style.transform = `translate(-50%, ${pull - 60}px)`;
+  ptr.querySelector('span').textContent = pull > 70 ? 'Release to refresh' : 'Pull to refresh';
+}, { passive: true });
+addEventListener('touchend', async () => {
+  if (startY == null) return;
+  startY = null;
+  if (pull > 70) {
+    ptr.classList.add('spin'); ptr.querySelector('span').textContent = 'Refreshing';
+    ptr.style.transform = 'translate(-50%, 10px)';
+    await refresh();
+    navigator.vibrate?.(10);
+  }
+  ptr.classList.remove('spin'); ptr.style.opacity = 0; ptr.style.transform = 'translate(-50%, -60px)'; pull = 0;
+});
+
+// Swipe left or right on the page to move between tabs.
+const SWIPE_TABS = TABS.map(([k]) => k).filter(k => k !== 'setup');
+let sx = null, sy = 0;
+addEventListener('touchstart', e => {
+  sx = e.touches.length === 1 && !e.target.closest('.scroll, input, textarea, select, nav') ? e.touches[0].clientX : null; sy = e.touches[0].clientY;
+}, { passive: true });
+addEventListener('touchend', e => {
+  if (sx == null) return;
+  const t = e.changedTouches[0], dx = t.clientX - sx, dy = t.clientY - sy; sx = null;
+  const i = SWIPE_TABS.indexOf(tab);
+  if (Math.abs(dx) < 70 || Math.abs(dx) < Math.abs(dy) * 1.8 || i < 0 || !data || data.login || pinFor) return;
+  const next = SWIPE_TABS[i + (dx < 0 ? 1 : -1)];
+  if (next) { tab = next; location.hash = tab; render(); scrollTo(0, 0); }
+}, { passive: true });
 
 refresh();
 </script>

@@ -28,6 +28,10 @@ Diet plans: Family tab > each person > upload a PDF/photo or paste the plan. Gem
   summary that every suggestion, recipe and chat answer follows. Applies from the next suggestion.
 Cooking time: every combo must fit Settings > MAX_COOK_MINUTES (default 120).
 
+More:
+  Dish wishes and family favourites (Today), weekly shopping list, fridge photo scan and use-by dates (Pantry),
+  9pm rating reminder, personal PIN for each person, admin "Start the vote now" / "Close the vote now".
+
 AFTER UPDATING THE CODE
   Setup > "Repair sheet tabs" once (adds the diet plan columns and the cooking-time setting).
 
@@ -77,6 +81,9 @@ SETUP
        VAPID_PRIVATE_KEY
        VAPID_SUBJECT          mailto:your-email
        APP_PASSWORD           household password for the app
+       ADMIN_PIN              admin PIN (8+ digits) for Setup, settings, Go live, Pause, adding people
+       ADMIN_EMAIL            optional, shown on the admin sign-in (ipushpendrathakur@gmail.com)
+       GEMINI_FALLBACK_MODEL  optional, a second Gemini model used when the first is busy
      Netlify functions allow about 4 KB of environment variables in total; these fit.
    - Deploy. Netlify installs web-push from package.json automatically.
 
