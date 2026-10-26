@@ -13,183 +13,169 @@
 <link rel="icon" href="/icon-192.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <style>
-/* Rasoi: Apple-style Liquid Glass. One bold element: today's dish on a glass plate over a saffron glow. */
+/* Rasoi: clean white cards, pastel icon tiles with line icons, 15px text. Details stay folded until tapped. */
 :root{
-  --canvas:#F2F2F7; --ink:#1C1C1E; --ink2:#3C3C43; --muted:#8E8E93; --hair:rgba(60,60,67,.14);
-  --glass:rgba(255,255,255,.62); --glass-strong:rgba(255,255,255,.82); --rim:rgba(255,255,255,.75);
-  --saffron:#FF9F0A; --saffron-ink:#C26A00; --leaf:#34C759; --leaf-ink:#1F8A3B; --chilli:#FF3B30; --sky:#0A84FF;
-  --glow1:rgba(255,159,10,.55); --glow2:rgba(255,94,58,.24); --glow3:rgba(52,199,89,.18);
-  --shadow:0 1px 1px rgba(0,0,0,.04),0 8px 30px rgba(31,24,10,.10);
+  --canvas:#F4F4F6; --card:#FFFFFF; --card2:#F7F7F9; --ink:#111114; --ink2:#3A3A40; --muted:#8A8A93; --hair:#ECECF0;
+  --accent:#FF8A00; --accent-ink:#B85F00; --green:#22A447; --red:#E5383B; --blue:#0A7CFF;
+  --btn:#111114; --btn-ink:#FFFFFF; --shadow:0 1px 2px rgba(17,17,20,.04),0 6px 24px rgba(17,17,20,.06);
   color-scheme:light;
 }
 @media (prefers-color-scheme:dark){:root{
-  --canvas:#000000; --ink:#F5F5F7; --ink2:#D1D1D6; --muted:#98989F; --hair:rgba(84,84,88,.45);
-  --glass:rgba(38,38,42,.55); --glass-strong:rgba(44,44,48,.82); --rim:rgba(255,255,255,.10);
-  --saffron:#FFA826; --saffron-ink:#FFB340; --leaf:#30D158; --leaf-ink:#30D158; --chilli:#FF453A; --sky:#0A84FF;
-  --glow1:rgba(255,159,10,.30); --glow2:rgba(255,69,58,.14); --glow3:rgba(48,209,88,.12);
-  --shadow:0 1px 1px rgba(0,0,0,.3),0 10px 34px rgba(0,0,0,.45);
-  color-scheme:dark;
+  --canvas:#000; --card:#151518; --card2:#1D1D21; --ink:#F4F4F6; --ink2:#D0D0D6; --muted:#8E8E96; --hair:#26262B;
+  --accent:#FF9F1A; --accent-ink:#FFB347; --green:#34C759; --red:#FF453A; --blue:#2E8BFF;
+  --btn:#F4F4F6; --btn-ink:#111114; --shadow:none; color-scheme:dark;
 }}
-body.decided{--glow1:rgba(52,199,89,.34);--glow3:rgba(255,159,10,.22)}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
+html,body{overscroll-behavior-y:contain}
 body{margin:0;min-height:100vh;background:var(--canvas);color:var(--ink);
-  font:400 17px/1.47 -apple-system,BlinkMacSystemFont,"SF Pro Text","Kohinoor Devanagari","Noto Sans Devanagari","Segoe UI",Roboto,sans-serif;
-  letter-spacing:-.01em;-webkit-font-smoothing:antialiased;padding:env(safe-area-inset-top) 0 calc(110px + env(safe-area-inset-bottom))}
-body::before{content:"";position:fixed;inset:-20vmax;z-index:-1;pointer-events:none;transition:background .8s ease;
-  background:radial-gradient(38vmax 30vmax at 18% 8%,var(--glow1),transparent 70%),
-             radial-gradient(34vmax 28vmax at 92% 22%,var(--glow2),transparent 70%),
-             radial-gradient(40vmax 32vmax at 60% 96%,var(--glow3),transparent 70%)}
-.wrap{max-width:660px;margin:0 auto;padding:12px 18px 0}
-a{color:var(--sky)}
-:focus-visible{outline:3px solid var(--saffron);outline-offset:2px;border-radius:10px}
+  font:400 15px/1.45 -apple-system,BlinkMacSystemFont,"SF Pro Text","Kohinoor Devanagari","Noto Sans Devanagari","Segoe UI",Roboto,sans-serif;
+  letter-spacing:-.006em;-webkit-font-smoothing:antialiased;padding:env(safe-area-inset-top) 0 calc(100px + env(safe-area-inset-bottom))}
+.wrap{max-width:600px;margin:0 auto;padding:10px 16px 0}
+a{color:var(--blue)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:8px}
+svg{display:block}
 
-/* top bar */
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:6px 0}
-.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:17px;letter-spacing:-.02em}
-.thali{width:26px;height:26px;border-radius:50%;background:conic-gradient(from 200deg,var(--saffron),#FF6A3D,var(--saffron));box-shadow:inset 0 0 0 6px var(--glass-strong),0 2px 8px var(--glow1)}
+/* top bar and titles */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:4px 0}
+.brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:15px}
+.thali{width:22px;height:22px;border-radius:50%;background:var(--accent);box-shadow:inset 0 0 0 5px var(--card)}
 .top-actions{display:flex;gap:8px;align-items:center}
-.icon-btn{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;padding:0}
-.icon-btn svg{width:20px;height:20px}
+.icon-btn{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;padding:0;background:var(--card);border:0;box-shadow:var(--shadow)}
+.icon-btn svg{width:18px;height:18px}
+.hero{margin:14px 0 12px}
+.hero p{margin:0;color:var(--muted);font-size:13px;font-weight:500}
+.hero h1{margin:1px 0 0;font-size:26px;line-height:1.15;font-weight:700;letter-spacing:-.022em}
+h3{font-size:13px;font-weight:600;color:var(--muted);margin:22px 4px 8px}
 
-/* glass material */
-.person,.opt,.msg.bot,.banner,.plate,nav#nav,.toast{
-  background:var(--glass);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);
-  border:1px solid var(--rim);box-shadow:var(--shadow)}
+/* cards and grouped rows */
+.card,.plate,.group,.banner,.person,.opt,.msg.bot{background:var(--card);border-radius:20px;box-shadow:var(--shadow)}
+.group{overflow:hidden}
+.item{border-bottom:1px solid var(--hair)}
+.item:last-child{border-bottom:0}
+.item>summary{display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;list-style:none;min-height:56px}
+.item>summary::-webkit-details-marker{display:none}
+.tt{flex:1;min-width:0;display:flex;flex-direction:column}
+.tt b{font-weight:600;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tt small{color:var(--muted);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chev{width:16px;height:16px;color:var(--muted);transition:transform .2s ease;flex:none}
+.item[open]>summary .chev{transform:rotate(90deg)}
+.ib{padding:0 14px 16px}
+.tile{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;flex:none;color:var(--t);
+  background:color-mix(in srgb,var(--t) 14%,transparent)}
+.tile svg{width:19px;height:19px}
+.tile.av{color:#fff;background:var(--t);font-size:13px;font-weight:700;border-radius:50%}
+.count{font-size:13px;font-weight:600;color:var(--muted);flex:none}
+.count.hot{color:var(--red)}
 
-/* large titles */
-.hero{margin:18px 0 6px}
-.hero p{margin:0;color:var(--muted);font-size:15px;font-weight:500}
-.hero h1{margin:2px 0 0;font-size:34px;line-height:1.1;font-weight:700;letter-spacing:-.025em}
-h2{font-size:20px;font-weight:700;letter-spacing:-.02em;margin:30px 0 10px}
+/* the dish card */
+.plate{padding:18px;position:relative;overflow:hidden}
+.plate .photo{margin:-18px -18px 14px;height:170px;background:var(--card2) center/cover}
+.plate-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.dish{font-size:clamp(24px,7vw,30px);font-weight:700;line-height:1.12;letter-spacing:-.025em;margin:8px 0 6px}
+.meta{color:var(--muted);margin:0;font-size:13px}
+.pill-tag{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;
+  background:color-mix(in srgb,var(--accent) 14%,transparent);color:var(--accent-ink)}
+.pill-tag svg{width:13px;height:13px}
+.pill-tag.ok{background:color-mix(in srgb,var(--green) 14%,transparent);color:var(--green)}
+.ring{width:40px;height:40px;flex:none;position:relative}
+.ring svg{width:40px;height:40px;transform:rotate(-90deg)}
+.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:11px;font-weight:700}
+.voters{display:flex;margin-top:10px}
+.av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:700;color:#fff;border:2px solid var(--card);margin-right:-6px}
+.av.wait{background:var(--hair)!important;color:var(--muted)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 
-/* the plate: today's dish */
-.plate{border-radius:30px;padding:22px 22px 20px;margin-top:16px;position:relative;overflow:hidden;isolation:isolate}
-.plate::after{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;
-  background:radial-gradient(circle,var(--glow1),transparent 70%);pointer-events:none;z-index:-1}
-.dish{font-size:clamp(32px,8.6vw,48px);font-weight:800;line-height:1.04;letter-spacing:-.035em;margin:6px 0 10px;
-  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Kohinoor Devanagari","Noto Sans Devanagari",sans-serif}
-.meta{color:var(--muted);margin:0;font-size:15px}
-.pill-tag{display:inline-block;font-size:13px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(255,159,10,.16);color:var(--saffron-ink)}
-.pill-tag.ok{background:rgba(52,199,89,.16);color:var(--leaf-ink)}
+/* options inside the Options row */
+.opt{box-shadow:none;background:var(--card2);border-radius:14px;padding:12px;margin-top:8px;display:grid;grid-template-columns:1fr auto;gap:2px 10px}
+.opt b{font-size:15px;font-weight:600}
+.opt>span:nth-child(2){font-size:13px;font-weight:600;color:var(--accent-ink);white-space:nowrap}
+.bar{grid-column:1/-1;height:4px;background:var(--hair);border-radius:2px;overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.choice{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;grid-column:1/-1}
+.choice button[aria-pressed=true]{background:var(--accent);color:#111;border-color:transparent}
 
-/* options */
-.opt{border-radius:22px;padding:16px 18px;margin-top:12px;display:grid;grid-template-columns:1fr auto;gap:4px 12px;align-items:start}
-.opt b{font-size:17px;font-weight:600;letter-spacing:-.015em}
-.opt > span:nth-child(2){font-size:15px;font-weight:600;color:var(--saffron-ink);white-space:nowrap}
-.bar{grid-column:1/-1;height:6px;background:var(--hair);border-radius:3px;overflow:hidden;margin-top:8px}
-.bar i{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--saffron),#FF6A3D);transition:width .5s cubic-bezier(.2,.8,.2,1)}
-.choice{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;grid-column:1/-1}
-.choice button[aria-pressed=true]{background:var(--saffron);border-color:transparent;color:#1C1C1E}
-
-/* buttons: Apple pills */
-button{font:inherit;font-size:16px;font-weight:600;letter-spacing:-.01em;border-radius:999px;padding:10px 18px;cursor:pointer;
-  border:1px solid var(--rim);background:var(--glass-strong);color:var(--ink);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  transition:transform .12s ease,background .2s ease}
+/* buttons */
+button{font:inherit;font-size:14px;font-weight:600;border-radius:999px;padding:8px 15px;cursor:pointer;border:1px solid var(--hair);
+  background:var(--card);color:var(--ink);transition:transform .1s ease}
 button:active{transform:scale(.97)}
-button.primary{background:var(--ink);color:var(--canvas);border-color:transparent}
-@media (prefers-color-scheme:dark){button.primary{background:var(--saffron);color:#1C1C1E}}
+button.primary{background:var(--btn);color:var(--btn-ink);border-color:transparent}
+button.danger{color:var(--red)}
 button:disabled{opacity:.4;cursor:not-allowed;transform:none}
-.who{font-size:14px;padding:7px 13px}
+.who{font-size:13px;padding:6px 12px;background:var(--card);border:0;box-shadow:var(--shadow)}
+.ib .who,.opt .who,.msg .who{box-shadow:none;border:1px solid var(--hair)}
+.filebtn{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:600;padding:8px 15px;border-radius:999px;cursor:pointer;background:var(--btn);color:var(--btn-ink)}
+.filebtn input{display:none}
+.filebtn svg{width:16px;height:16px}
 
-/* forms: inset grouped */
-label{display:block;font-size:13px;color:var(--muted);font-weight:500}
-input,select,textarea{font:inherit;font-size:16px;width:100%;margin-top:4px;padding:11px 13px;border-radius:12px;
-  border:1px solid var(--hair);background:var(--glass-strong);color:var(--ink);-webkit-appearance:none;appearance:none}
+/* forms */
+label{display:block;font-size:12px;color:var(--muted);font-weight:500}
+input,select,textarea{font:inherit;font-size:16px;width:100%;margin-top:3px;padding:9px 11px;border-radius:10px;border:1px solid var(--hair);background:var(--card2);color:var(--ink);-webkit-appearance:none;appearance:none}
 select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
-  background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:32px}
-input[type=file]{padding:9px;font-size:14px}
-input:focus,select:focus,textarea:focus{outline:none;border-color:var(--saffron);box-shadow:0 0 0 4px rgba(255,159,10,.2)}
-.person{border-radius:24px;padding:18px;margin-top:14px}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:14px}
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
-.plan{border-top:1px solid var(--hair);margin-top:18px;padding-top:14px}
+  background-position:calc(100% - 16px) 55%,calc(100% - 11px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:28px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent)}
+input[type=checkbox]{width:18px;height:18px;padding:0;-webkit-appearance:auto;appearance:auto;accent-color:var(--accent)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:end}
+.person{padding:16px}
+.pin input{font-size:26px;letter-spacing:.4em;text-align:center;max-width:200px}
 
-/* lists and tables */
-.scroll{overflow-x:auto;border-radius:20px}
-table{width:100%;border-collapse:collapse;font-size:15px}
-.scroll table{background:var(--glass);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid var(--rim);border-radius:20px;overflow:hidden}
-td,th{text-align:left;padding:12px 14px;border-bottom:1px solid var(--hair);vertical-align:middle}
-tr:last-child td{border-bottom:0}
-th{font-size:13px;color:var(--muted);font-weight:500}
-td input{max-width:96px;padding:7px 10px;margin:0}
-.todo{list-style:none;padding:0;margin:8px 0;border-radius:20px;overflow:hidden;background:var(--glass);border:1px solid var(--rim);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px)}
-.todo li{padding:12px 16px;border-bottom:1px solid var(--hair)}
+/* lists */
+.todo{list-style:none;padding:0;margin:4px 0}
+.todo li{padding:7px 0;border-bottom:1px solid var(--hair)}
 .todo li:last-child{border-bottom:0}
-details{margin-top:10px;border-radius:18px;background:var(--glass);border:1px solid var(--rim);padding:12px 16px}
-summary{cursor:pointer;font-weight:600;list-style:none}
-summary::-webkit-details-marker{display:none}
-summary::after{content:"+";float:right;color:var(--muted);font-weight:400}
-details[open] summary::after{content:"\2212"}
-details ol{padding-left:20px;margin:10px 0 4px}
-details li{margin:6px 0}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+td,th{text-align:left;padding:7px 6px;border-bottom:1px solid var(--hair);vertical-align:middle}
+th{font-size:12px;color:var(--muted);font-weight:500}
+td input{padding:6px 8px;margin:0}
+details.sub{margin-top:8px;border-radius:12px;background:var(--card2);padding:10px 12px}
+details.sub summary{cursor:pointer;font-weight:600;font-size:14px}
+details.sub ol{padding-left:18px;margin:8px 0 2px}
+details.sub li{margin:4px 0}
 
 /* status */
-.banner{border-radius:20px;padding:14px 16px;margin-top:16px;font-size:15px}
-.done{color:var(--leaf-ink);font-weight:600}
-.err{color:var(--chilli)}
-.warn{background:var(--chilli);color:#fff;border-radius:16px;padding:12px 16px;margin:12px 0;font-weight:600}
-.meter{height:10px;background:var(--hair);border-radius:5px;overflow:hidden;margin:10px 0}
-.meter i{display:block;height:100%;border-radius:5px;background:linear-gradient(90deg,var(--leaf),#5EE07A)}
-.meter i.over{background:linear-gradient(90deg,var(--chilli),#FF7A6E)}
+.banner{padding:12px 14px;margin:0 0 12px;font-size:14px}
+.done{color:var(--green);font-weight:600}
+.err{color:var(--red)}
+.soon{color:var(--red);font-weight:600}
+.warn{background:var(--red);color:#fff;border-radius:12px;padding:10px 12px;margin:10px 0 0;font-weight:600;font-size:14px}
+.meter{height:8px;background:var(--hair);border-radius:4px;overflow:hidden;margin:10px 0 6px}
+.meter i{display:block;height:100%;background:var(--green)}
+.meter i.over{background:var(--red)}
+.big{font-size:30px;font-weight:700;letter-spacing:-.025em}
 
-/* chat: message bubbles */
-.msg{border-radius:22px;padding:11px 15px;margin:8px 0;max-width:86%;overflow-wrap:anywhere;font-size:16px}
-.msg.me{background:linear-gradient(180deg,#FFB03A,var(--saffron));color:#1C1C1E;margin-left:auto;width:fit-content;border-bottom-right-radius:7px}
-.msg.bot{border-bottom-left-radius:7px}
-.msg a{color:var(--sky)}
-.yt{display:inline-flex;align-items:center;gap:6px;margin-top:10px;font-weight:600;text-decoration:none;color:var(--chilli)!important}
-.yt svg{width:20px;height:20px}
+/* chat */
+.msg{border-radius:18px;padding:9px 13px;margin:6px 0;max-width:86%;overflow-wrap:anywhere;font-size:15px}
+.msg.me{background:var(--accent);color:#111;margin-left:auto;width:fit-content;border-bottom-right-radius:6px}
+.msg.bot{border-bottom-left-radius:6px}
+.yt{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-weight:600;text-decoration:none;color:var(--red)!important}
+.yt svg{width:18px;height:18px}
 
-/* floating tab bar */
-nav#nav{position:fixed;left:50%;bottom:calc(14px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;
-  display:flex;gap:2px;padding:6px;border-radius:999px;max-width:calc(100vw - 24px);background:var(--glass-strong);backdrop-filter:blur(40px) saturate(200%);-webkit-backdrop-filter:blur(40px) saturate(200%)}
-nav#nav button{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:60px;padding:7px 10px 6px;border:0;background:none;
-  backdrop-filter:none;-webkit-backdrop-filter:none;color:var(--muted);font-size:11px;font-weight:600;letter-spacing:0}
-nav#nav button svg{width:23px;height:23px}
-nav#nav button[aria-current=page]{background:var(--glass-strong);color:var(--saffron-ink);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+/* tab bar */
+nav#nav{position:fixed;left:50%;bottom:calc(12px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:20;display:flex;gap:2px;
+  padding:5px;border-radius:999px;max-width:calc(100vw - 24px);background:var(--card);box-shadow:0 8px 30px rgba(0,0,0,.12);border:1px solid var(--hair)}
+nav#nav button{display:flex;flex-direction:column;align-items:center;gap:1px;min-width:58px;padding:6px 8px 5px;border:0;background:none;color:var(--muted);font-size:10px;font-weight:600}
+nav#nav button svg{width:21px;height:21px}
+nav#nav button[aria-current=page]{color:var(--accent-ink);background:color-mix(in srgb,var(--accent) 12%,transparent)}
 
-/* toast: island at the top */
-.toast{position:fixed;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:30;
-  border-radius:999px;padding:11px 18px;font-size:15px;font-weight:600;max-width:92vw;text-align:center}
-.toast.err{color:var(--chilli)}
-html,body{overscroll-behavior-y:contain}
-.plate .photo{margin:-22px -22px 16px;height:190px;background-size:cover;background-position:center;position:relative}
-.plate .photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,var(--glass-strong))}
-.plate-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.ring{width:46px;height:46px;flex:none;position:relative}
-.ring svg{width:46px;height:46px;transform:rotate(-90deg)}
-.ring b{position:absolute;inset:0;display:grid;place-items:center;font-size:12px;font-weight:700;letter-spacing:-.02em}
-.voters{display:flex;margin-top:12px}
-.av{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff;
-  border:2px solid var(--glass-strong);margin-right:-6px}
-.av.wait{background:var(--hair)!important;color:var(--muted)}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 8px 7px 13px;border-radius:999px;font-size:15px;background:var(--glass);border:1px solid var(--rim)}
-.chip small{color:var(--muted)}
-.chip button{padding:2px 8px;font-size:13px}
-.soon{color:var(--chilli);font-weight:600}
-.skel{border-radius:22px;background:linear-gradient(90deg,var(--hair) 25%,var(--glass-strong) 50%,var(--hair) 75%);background-size:300% 100%;animation:shim 1.3s infinite linear;margin-top:14px}
-@keyframes shim{to{background-position:-150% 0}}
-.filebtn{display:inline-flex;align-items:center;gap:8px;font-size:16px;font-weight:600;color:var(--ink);padding:10px 18px;border-radius:999px;cursor:pointer;
-  background:var(--glass-strong);border:1px solid var(--rim);margin-top:8px}
-.filebtn input{display:none}
-.filebtn:has(input:disabled){opacity:.4;cursor:not-allowed}
-.pin input{font-size:28px;letter-spacing:.4em;text-align:center;max-width:220px}
-.ptr{position:fixed;top:calc(10px + env(safe-area-inset-top));left:50%;z-index:25;display:flex;align-items:center;gap:8px;
-  padding:8px 14px;border-radius:999px;font-size:14px;font-weight:600;color:var(--ink2);opacity:0;pointer-events:none;
-  transform:translate(-50%,-60px);background:var(--glass-strong);backdrop-filter:blur(30px);-webkit-backdrop-filter:blur(30px);border:1px solid var(--rim);box-shadow:var(--shadow)}
-.ptr i{width:16px;height:16px;border-radius:50%;border:2px solid var(--hair);border-top-color:var(--saffron)}
+/* toast, pull to refresh, loading */
+.toast{position:fixed;top:calc(10px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:30;background:var(--card);
+  box-shadow:0 8px 30px rgba(0,0,0,.15);border-radius:999px;padding:9px 16px;font-size:14px;font-weight:600;max-width:92vw;text-align:center}
+.toast.err{color:var(--red)}
+.ptr{position:fixed;top:calc(8px + env(safe-area-inset-top));left:50%;z-index:25;display:flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;
+  font-size:13px;font-weight:600;color:var(--ink2);opacity:0;pointer-events:none;transform:translate(-50%,-60px);background:var(--card);box-shadow:var(--shadow)}
+.ptr i{width:14px;height:14px;border-radius:50%;border:2px solid var(--hair);border-top-color:var(--accent)}
 .ptr.spin i{animation:spin .8s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-
+.skel{border-radius:18px;background:linear-gradient(90deg,var(--hair) 25%,var(--card) 50%,var(--hair) 75%);background-size:300% 100%;animation:shim 1.3s infinite linear;margin-top:12px}
+@keyframes shim{to{background-position:-150% 0}}
 @media (prefers-reduced-motion:no-preference){
-  .plate{animation:settle .6s cubic-bezier(.2,.8,.2,1)}
-  @keyframes settle{from{opacity:0;transform:translateY(10px) scale(.98)}}
-  .toast{animation:drop .35s cubic-bezier(.2,.9,.3,1.2)}
-  @keyframes drop{from{opacity:0;transform:translate(-50%,-14px) scale(.9)}}
+  .item[open]>.ib{animation:open .22s ease}
+  @keyframes open{from{opacity:0;transform:translateY(-4px)}}
+  .toast{animation:drop .3s ease}
+  @keyframes drop{from{opacity:0;transform:translate(-50%,-10px)}}
 }
-@media (max-width:420px){nav#nav button{min-width:54px;padding:7px 6px 6px}}
 </style>
 </head>
 <body>
@@ -278,6 +264,28 @@ const ICON = {
   pantry: svg('<rect x="5" y="7" width="14" height="13" rx="3"/><path d="M7 4h10v3H7z"/><path d="M9 12h6"/>'),
   spend: svg('<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/><path d="M16 15h2"/>'),
   setup: svg('<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>'),
+  chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>',
+  clock: svg('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>').replace('<svg', '<svg style="width:13px;height:13px"'),
+  check: svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>').replace('<svg', '<svg style="width:13px;height:13px"'),
+  list: svg('<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/>'),
+  cart: svg('<path d="M3 4h2l2.4 11.2a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6.2"/><circle cx="10" cy="20" r="1.3"/><circle cx="17" cy="20" r="1.3"/>'),
+  chef: svg('<path d="M7 14a4 4 0 0 1-.6-8A5 5 0 0 1 16 5a4 4 0 0 1 1 9"/><path d="M7 14h10v6H7z"/><path d="M10 17h4"/>'),
+  users: svg('<circle cx="9" cy="8" r="3.2"/><path d="M3 19c.6-3.2 3-5 6-5s5.4 1.8 6 5"/><path d="M16 4.5a3 3 0 0 1 0 6M18 14c1.8.6 3 2.2 3.3 4.5"/>'),
+  star: svg('<path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.8z"/>'),
+  heart: svg('<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>'),
+  sparkle: svg('<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z"/>'),
+  calendar: svg('<rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'),
+  plus: svg('<path d="M12 5v14M5 12h14"/>'),
+  lock: svg('<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>').replace('<svg', '<svg style="width:15px;height:15px;display:inline-block;vertical-align:-2px;margin-right:4px"'),
+  camera: svg('<path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/>'),
+  flame: svg('<path d="M12 21c-4 0-6.5-2.7-6.5-6.2 0-3.7 3-5.6 3.9-9.3 2.4 1.7 3 3.7 3.1 5.5 1-.6 1.6-1.6 1.9-2.8 2 1.6 4.1 4.1 4.1 6.6 0 3.5-2.5 6.2-6.5 6.2z"/>'),
+  jar: svg('<rect x="6" y="8" width="12" height="13" rx="3"/><path d="M8 4h8v4H8z"/>'),
+  leaf: svg('<path d="M5 19c0-8 5-13 15-14-1 10-6 15-14 15"/><path d="M5 19c3-4 6-6 9-7"/>'),
+  wallet: svg('<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M16 12.5h2"/><path d="M3 9h18"/>'),
+  receipt: svg('<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/>'),
+  gear: svg('<circle cx="12" cy="12" r="3"/><path d="M12 3v2.5M12 18.5V21M3 12h2.5M18.5 12H21M5.6 5.6l1.8 1.8M16.6 16.6l1.8 1.8M5.6 18.4l1.8-1.8M16.6 7.4l1.8-1.8"/>'),
+  bell: svg('<path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/>'),
+  share: svg('<path d="M12 15V4M8 8l4-4 4 4"/><path d="M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/>').replace('<svg', '<svg style="width:15px;height:15px;display:inline-block;vertical-align:-2px;margin-right:5px"'),
   play: '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="5" width="20" height="14" rx="4" fill="currentColor"/><path d="M10 9.2v5.6l4.8-2.8z" fill="#fff"/></svg>',
 };
 const TITLE = { today: 'Tonight’s dinner', ask: 'Ask Rasoi', family: 'Family', pantry: 'Pantry', spend: 'Spending', setup: 'Setup' };
@@ -307,11 +315,6 @@ document.addEventListener('click', e => {
 });
 
 // ---------- login ----------
-function viewLogin(msg) {
-  return `${msg ? `<p class="err">${esc(msg)}</p>` : ''}
-    <form class="row person" onsubmit="login(event)"><label>Password<input name="pw" type="password" required autocomplete="current-password"></label>
-    <button class="primary">Open Rasoi</button></form>`;
-}
 function login(e) { e.preventDefault(); key = new FormData(e.target).get('pw'); store.set('rasoi-key', key); refresh(); }
 
 // ---------- Ask (AI chat) ----------
@@ -348,17 +351,6 @@ async function shareMsg(btn, i) {
 }
 
 // ---------- who is using this phone ----------
-function viewWho() {
-  if (pinFor) return viewPin();
-  return `<p class="meta">Votes and notifications go to this person.</p>
-    <div class="choice">${data.members.filter(m => m.role !== 'cook').map(m => `<button onclick="pick('${esc(m.name)}')">${esc(m.name)}</button>`).join('')}</div>`;
-}
-function viewPin() {
-  const set = pinMode === 'set';
-  return `<p class="meta">${set ? `Hi ${esc(pinFor)}, choose a 4 to 6 digit PIN. You'll use it on any new phone.` : `Enter ${esc(pinFor)}'s PIN.`}</p>
-    <form class="person pin" onsubmit="submitPin(event)"><label>${set ? 'New PIN' : 'PIN'}<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,6}" maxlength="6" autocomplete="off" required autofocus></label>
-    <p class="row" style="margin-top:12px"><button class="primary">${set ? 'Save PIN' : 'Continue'}</button><button type="button" onclick="pinFor=null;render()">Back</button></p></form>`;
-}
 function pick(name) {
   const m = data.members.find(x => x.name === name);
   pinFor = name; pinMode = m?.has_pin ? 'enter' : 'set'; render();
@@ -375,11 +367,6 @@ async function submitPin(e) {
 }
 
 // ---------- notifications ----------
-function pushBanner() {
-  if (!me || data.needsInit || data.subs.some(s => s.member === me)) return '';
-  if (isIOS && !standalone) return `<p class="banner">To get notifications on iPhone: tap Share, then Add to Home Screen, and open Rasoi from the home screen.</p>`;
-  return `<p class="banner row">Turn on notifications on this phone to get the daily vote.<button class="primary" onclick="enablePush(this)">Turn on notifications</button></p>`;
-}
 const urlB64 = s => Uint8Array.from(atob((s + '='.repeat((4 - s.length % 4) % 4)).replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0));
 async function enablePush(btn) {
   if (!('PushManager' in window)) return toast('This browser cannot receive notifications. Use Chrome on Android, or the home screen app on iPhone.', true);
@@ -392,71 +379,7 @@ async function enablePush(btn) {
 }
 
 // ---------- Today ----------
-function viewToday() {
-  const d = data.days.find(x => x.date === data.today);
-  let h = data.settings.LIVE === 'TRUE' ? '' : data.isAdmin
-    ? `<p class="banner">Rasoi is not live yet, so no notifications go out. Finish the checklist in <button data-tab="setup">Setup</button></p>`
-    : `<p class="banner">Rasoi is paused. The admin switches it on in Setup.</p>`;
-  if (!d) h += `<section class="plate"><span class="pill-tag">Vote opens at 12:00</span><div class="dish">Nothing decided yet</div><p class="meta">Three combos arrive at noon. Voting closes at 1pm.</p>
-    ${data.isAdmin ? `<p style="margin:16px 0 0"><button class="primary" onclick="busy(this,'Starting...');act({action:'startVote'},'Vote started')">Start the vote now</button></p>` : ''}</section>`;
-  else if (d.status === 'voting') {
-    const opts = J(d.options, []), latest = {};
-    data.votes.filter(v => v.date === d.date).forEach(v => latest[v.member] = +v.option);
-    const tally = opts.map((_, i) => Object.values(latest).filter(n => n === i + 1).length);
-    const lead = opts[tally.indexOf(Math.max(...tally))];
-    const votes = Object.keys(latest).length;
-    h += `<section class="plate">${votes ? `<div class="photo" data-dish="${esc(lead?.name)}"></div>` : ''}
-      <div class="plate-head"><span class="pill-tag">Voting until 1pm${d.mode === 'off' ? ', cook is off' : ''}</span>${ring()}</div>
-      <div class="dish">${esc(lead?.name)}</div>
-      <p class="meta">${votes ? `Leading with ${votes} of ${data.family.length} votes in` : 'No votes yet. Pick the one you want below.'}</p>
-      ${voters(latest)}
-      ${data.isAdmin ? `<p style="margin:16px 0 0"><button onclick="busy(this,'Closing...');act({action:'closeVote'},'Vote closed')">Close the vote now</button></p>` : ''}</section><h2>Options</h2>`;
-    h += opts.map((o, i) => `<div class="opt"><b>${i + 1}. ${esc(o.name)}</b><span>${tally[i]} vote${tally[i] === 1 ? '' : 's'}</span>
-      <span class="meta">${esc(o.summary)} About ${esc(o.cook_minutes)} min, AED ${esc(o.est_cost_aed)}, ${esc(o.missing_items)} to buy.</span>
-      <span class="bar"><i style="width:${data.family.length ? tally[i] / data.family.length * 100 : 0}%"></i></span>
-      <span class="choice"><button aria-pressed="${latest[me] === i + 1}" onclick="this.disabled=true;act({action:'vote',n:${i + 1}},'Vote saved')">${latest[me] === i + 1 ? 'Your vote' : 'Vote for this'}</button></span></div>`).join('');
-  } else {
-    const w = J(d.winner, {}), r = J(d.recipe, null), miss = J(d.missing, []);
-    const label = { decided: 'Decided, cooking tonight', cooked: 'Cooked', postponed: 'Moved to tomorrow, cook is off', off: 'Cook is off today', skip: 'No cooking today, eating out' }[d.status] || d.status;
-    h += `<section class="plate">${w.name ? `<div class="photo" data-dish="${esc(w.name)}"></div>` : ''}<span class="pill-tag ${['decided', 'cooked'].includes(d.status) ? 'ok' : ''}">${esc(label)}</span><div class="dish">${esc(w.name || (d.status === 'skip' ? 'Eating out' : 'Cook is off'))}</div>
-      ${w.summary ? `<p class="meta">${esc(w.summary)}</p>` : ''}${r?.total_minutes ? `<p class="meta" style="margin-top:4px">About ${esc(r.total_minutes)} minutes for the cook</p>` : ''}`;
-    if (r?.warning) h += `<p class="warn">${esc(r.warning)}</p>`;
-    if (d.status === 'skip') h += `<p><button class="primary" onclick='sendToCook(this, ${esc(JSON.stringify('आज खाना नहीं बनेगा, हम बाहर खा रहे हैं। No cooking today, we are eating out.'))})'>Tell the cook</button></p>`;
-    if (d.status === 'decided') h += `<p style="margin:16px 0 0"><button class="primary" onclick="this.disabled=true;act({action:'cooked'},'Marked as cooked. Pantry updated.')">Mark as cooked</button></p>`;
-    h += '</section>';
-    if (miss.length && d.status === 'decided') h += viewShopping(miss);
-    if (r) {
-      const en = `<details open><summary>Recipe in English</summary><p>${esc(r.variants_en)}</p><ol>${(r.steps_en || []).map(s => `<li>${esc(s)}</li>`).join('')}</ol></details>`;
-      const hi = `<details lang="hi"><summary>हिंदी में रेसिपी</summary><p>${esc(r.variants_hi)}</p><ol>${(r.steps_hi || []).map(s => `<li>${esc(s)}</li>`).join('')}</ol></details>`;
-      const ing = `<details><summary>Ingredients</summary><ul class="todo">${(r.ingredients || []).map(i => `<li>${esc(i.item)} ${esc(i.qty)} ${esc(i.unit)}</li>`).join('')}</ul></details>`;
-      const share = `<p class="row" style="margin-top:14px"><button class="primary" onclick='sendToCook(this, ${esc(JSON.stringify(cookText(w, r, 'hi')))})'>Send recipe to cook (Hindi)</button>
-        <button onclick='sendToCook(this, ${esc(JSON.stringify(cookText(w, r, 'en')))})'>Send in English</button></p>`;
-      h += en + hi + ing + (d.status === 'decided' ? share : '');
-    }
-  }
-  if (data.isAdmin && ['off', 'skip'].includes(d?.status)) h += `<p style="margin-top:14px"><button onclick="busy(this,'Starting...');act({action:'startVote'},'Vote started')">Start a vote anyway</button></p>`;
-  h += viewTonight(d);
-  h += viewRate();
-  h += viewWishes();
-  h += viewFavourites();
-  const past = data.days.filter(x => x.date < data.today && x.winner).slice(-7).reverse();
-  if (past.length) h += `<h2>Last few days</h2><div class="scroll"><table><tr><th>Date</th><th>Dish</th><th>Status</th></tr>${past.map(x => `<tr><td>${esc(x.date)}</td><td>${esc(J(x.winner, {}).name)}</td><td>${esc(x.status)}</td></tr>`).join('')}</table></div>`;
-  return h;
-}
 
-function viewTonight(d) {
-  if (d && !['voting', 'decided'].includes(d.status)) return '';
-  const t = data.tonight, away = t.away.includes(me);
-  let h = `<h2>Tonight</h2><p class="meta">${t.away.length ? esc(t.away.join(', ')) + ' not eating dinner. ' : 'Everyone is eating at home. '}${t.guests ? t.guests + ' guests. ' : ''}Changes before 1pm adjust the portions.</p>`;
-  h += `<div class="row" style="margin-top:10px">
-    <button onclick="this.disabled=true;act({action:'tonight',type:'${away ? 'home' : 'away'}'},'Saved')">${away ? 'I am eating tonight after all' : 'I am not eating tonight'}</button>
-    <label style="max-width:150px">Guests for dinner<input id="guests" type="number" min="0" max="30" value="${t.guests}"></label>
-    <button onclick="this.disabled=true;act({action:'tonight',type:'guests',count:$('#guests').value},'Guests saved')">Save guests</button></div>`;
-  h += `<div class="row" style="margin-top:14px">
-    <button onclick="if(confirm('Mark the cook as off today?')){this.disabled=true;act({action:'skipToday',reason:'cook_off'},'Day off noted')}">Cook is off today</button>
-    <button onclick="if(confirm('No cooking today?')){this.disabled=true;act({action:'skipToday',reason:'skip'},'No cooking today')}">No cooking today (eating out)</button></div>`;
-  return h;
-}
 
 const hue = s => [...s].reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 360, 7);
 const initials = n => n.split(/\s+/).map(x => x[0]).join('').slice(0, 2).toUpperCase();
@@ -471,24 +394,6 @@ function ring() {
   return `<span class="ring" title="Time left to vote"><svg viewBox="0 0 46 46"><circle cx="23" cy="23" r="19" fill="none" stroke="var(--hair)" stroke-width="4"/>
     <circle cx="23" cy="23" r="19" fill="none" stroke="var(--saffron)" stroke-width="4" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c * (1 - frac)}"/></svg>
     <b>${Math.ceil(left / 6e4)}m</b></span>`;
-}
-const wishCutoff = () => new Date(Date.parse(data.today) - 21 * 864e5).toISOString().slice(0, 10);
-function viewWishes() {
-  const open = data.wishes.filter(w => !w.status && w.date >= wishCutoff());
-  return `<h2>Dish wishes</h2><p class="meta">Wish for a dish and it comes up as a vote option within a few days.</p>
-    ${open.length ? `<div class="chips">${open.map(w => `<span class="chip">${esc(w.dish)} <small>${esc(w.member)}</small>
-      ${w.member === me || data.isAdmin ? `<button class="who" aria-label="Remove wish" onclick="act({action:'removeWish',row:${w._row}},'Wish removed')">&times;</button>` : ''}</span>`).join('')}</div>` : ''}
-    ${me && meRow()?.role !== 'cook' ? `<form class="row" style="margin-top:12px" onsubmit="event.preventDefault();act({action:'addWish',dish:this.dish.value},'Wish added')">
-      <label style="flex:1;min-width:200px">Your wish<input name="dish" maxlength="80" required placeholder="e.g. Rajma chawal"></label><button class="primary">Add wish</button></form>` : ''}`;
-}
-function viewFavourites() {
-  const by = {};
-  data.feedback.forEach(f => (by[f.dish] ||= []).push(+f.rating));
-  const fav = Object.entries(by).map(([dish, r]) => [dish, r.reduce((a, b) => a + b, 0) / r.length])
-    .filter(([, avg]) => avg >= 4).sort((a, b) => b[1] - a[1]).slice(0, 10);
-  if (!fav.length) return '';
-  return `<h2>Family favourites</h2><div class="chips">${fav.map(([dish, avg]) => `<span class="chip">${esc(dish)} <small>${avg.toFixed(1)} of 5</small>
-    ${me ? `<button class="who" onclick="act({action:'addWish',dish:${esc(JSON.stringify(dish))}},'Added to wishes')">Again</button>` : ''}</span>`).join('')}</div>`;
 }
 async function loadPhotos() {
   for (const el of document.querySelectorAll('.photo[data-dish]')) {
@@ -505,13 +410,6 @@ async function loadPhotos() {
   }
 }
 
-function viewShopping(miss) {
-  const b = data.buyer;
-  const claim = !b ? `<button class="primary" onclick="this.disabled=true;act({action:'buying'},'Everyone has been told you are buying')">I am buying these</button>`
-    : b === me ? `<span class="done">You are buying these.</span> <button onclick="this.disabled=true;act({action:'release'},'Handed back')">I cannot buy after all</button>`
-    : `<span class="done">${esc(b)} is buying these.</span>`;
-  return `<h2>To buy</h2><ul class="todo">${miss.map(m => `<li>${esc(m.item)} ${esc(m.qty)} ${esc(m.unit)}</li>`).join('')}</ul><p class="row">${claim}</p>`;
-}
 
 // Recipe text for the cook, sent by a family member over WhatsApp or any app.
 function cookText(w, r, lang) {
@@ -526,48 +424,9 @@ async function sendToCook(btn, text) {
   btn.textContent = 'Copied. Paste it in WhatsApp';
 }
 
-function viewRate() {
-  const last = [...data.days].reverse().find(d => d.date <= data.today && ['cooked', 'decided'].includes(d.status));
-  const yesterday = new Date(Date.parse(data.today) - 864e5).toISOString().slice(0, 10);
-  if (!last || last.date < yesterday || !me) return '';
-  if (last.status === 'decided' && last.date === data.today && (new Date().getUTCHours() + 4) % 24 < 19) return '';
-  if (data.feedback.some(f => f.date === last.date && f.member === me)) return '';
-  const dish = J(last.winner, {}).name;
-  return `<h2>How was ${esc(dish)}?</h2><form onsubmit="event.preventDefault()"><fieldset class="choice">
-    ${[1, 2, 3, 4, 5].map(n => `<button onclick="this.disabled=true;act({action:'rate',n:${n},comment:$('#rc').value},'Thanks, rating saved')">${n}</button>`).join('')}
-    </fieldset><label style="margin-top:10px">Comment (optional)<input id="rc" placeholder="e.g. a bit too spicy"></label></form>`;
-}
 
 // ---------- Family ----------
-function viewFamily() {
-  const admin = data.isAdmin;
-  const people = data.members.length ? data.members : [{ role: 'family' }];
-  const card = (m, i) => {
-    const mine = admin || m.name === me;
-    if (!mine) return `<div class="person"><b style="font-size:19px">${esc(m.name)}</b>${m.role === 'cook' ? ' <span class="pill-tag">cook</span>' : ''}
-      <p class="meta" style="margin-top:6px">${esc(m.diet || 'diet not set')}. Allergies: ${esc(m.allergies || 'not set')}${m.diet_plan ? '. Has a diet plan' : ''}.</p></div>`;
-    const locked = f => !admin && (f === 'name' || f === 'role');
-    return `<form class="person" data-i="${i}" onsubmit="saveMember(event)"><div class="grid">${FIELDS.map(([f, l, x]) => `<label>${l}${Array.isArray(x)
-      ? `<select name="${f}" ${locked(f) ? 'disabled' : ''}>${x.map(o => `<option ${o === (m[f] || '') ? 'selected' : ''} value="${o}">${o || 'choose'}</option>`).join('')}</select>`
-      : `<input name="${f}" value="${esc(m[f])}" placeholder="${esc(x || '')}" ${f === 'name' ? 'required' : ''} ${locked(f) ? 'disabled' : ''}>`}</label>`).join('')}</div>
-      <p class="row"><button class="primary">Save ${esc(m.name || 'person')}</button>
-      ${m.name === me ? `<button type="button" onclick="changePin()">Change my PIN</button>` : ''}
-      ${admin && m.has_pin && m.name !== me ? `<button type="button" onclick="if(confirm('Reset ${esc(m.name)}\u2019s PIN? They will choose a new one next time.'))act({action:'resetPin',member:data.members[${i}].name},'PIN reset')">Reset PIN</button>` : ''}</p>
-      ${m._row && m.role !== 'cook' ? viewPlan(m, i) : ''}</form>`;
-  };
-  return `<p class="meta">${admin ? 'You are the admin: you can add people and edit anyone.' : 'Edit your own card. Allergies are never broken by any suggestion.'}</p>`
-    + people.map(card).join('')
-    + (admin ? `<p style="margin-top:16px"><button onclick="data.members.push({role:'family'});render()">Add a person</button></p>` : '');
-}
 function changePin() { pinFor = me; pinMode = 'set'; render(); }
-function viewPlan(m, i) {
-  return `<div class="plan"><b>Diet plan</b>
-    ${m.diet_plan ? `<p class="meta">Updated ${esc(m.diet_plan_updated)}. Suggestions and answers follow this.</p><p>${fmt(m.diet_plan)}</p>` : '<p class="meta">No diet plan yet. Upload one from a dietitian or app, or paste it.</p>'}
-    <label class="filebtn">Upload plan (PDF or photo)<input type="file" accept="application/pdf,image/*" onchange="planFile(this, ${i})"></label>
-    <label style="margin-top:8px">Or paste it<textarea id="plan${i}" rows="4" placeholder="e.g. 1500 kcal, high protein, max 2 rotis at dinner, no fried food"></textarea></label>
-    <p class="row" style="margin-top:8px"><button type="button" onclick="planText(this, ${i})">Save pasted plan</button>
-    ${m.diet_plan ? `<button type="button" onclick="if(confirm('Remove this diet plan?'))act({action:'dietPlan',member:data.members[${i}].name,remove:true},'Plan removed')">Remove plan</button>` : ''}</p></div>`;
-}
 const readB64 = f => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result.split(',')[1]); r.onerror = no; r.readAsDataURL(f); });
 async function photoB64(f) {
   const img = await createImageBitmap(f), k = Math.min(1, 1280 / Math.max(img.width, img.height));
@@ -594,63 +453,6 @@ function saveMember(e) {
 }
 
 // ---------- Pantry ----------
-let scanItems = null;
-function viewPantry() {
-  const soonDate = new Date(Date.parse(data.today) + 3 * 864e5).toISOString().slice(0, 10);
-  const rows = [...data.pantry].sort((a, b) => (a.use_by || '9') .localeCompare(b.use_by || '9') || a.item.localeCompare(b.item));
-  const soon = rows.filter(p => p.use_by && p.use_by <= soonDate && +p.qty > 0);
-  return `<p class="meta">Bills, fridge photos and "cooked" keep this up to date. Items with a use-by date are cooked first.</p>
-    ${soon.length ? `<div class="banner"><b>Use first:</b> ${soon.map(p => `${esc(p.item)} (${esc(p.use_by)})`).join(', ')}</div>` : ''}
-    ${viewWeekly()}
-    <h2>Scan the fridge</h2><p class="meta">Take a photo of the fridge or a shelf. You check the list before anything is added.</p>
-    <label class="filebtn">Take a photo<input type="file" accept="image/*" capture="environment" onchange="scanPhoto(this)" ${me ? '' : 'disabled'}></label>
-    ${scanItems ? viewScan() : ''}
-    <h2>Add items</h2>
-    <form class="row person" onsubmit="addItem(event)">
-      <label>Item<input name="item" required placeholder="e.g. toor dal"></label>
-      <label>Quantity<input name="qty" required inputmode="decimal"></label>
-      <label>Unit<select name="unit">${['kg', 'g', 'l', 'ml', 'pcs', 'pack'].map(u => `<option>${u}</option>`).join('')}</select></label>
-      <label>Type<select name="category"><option value="fresh">fresh</option><option value="staple">staple</option></select></label>
-      <label>Use by (optional)<input name="use_by" type="date"></label>
-      <button class="primary">Add item</button></form>
-    <form class="person" onsubmit="addBulk(event)">
-      <label>Add many at once, one item per line<textarea name="lines" rows="6" placeholder="toor dal 2 kg&#10;basmati rice 5 kg&#10;paneer 400 g&#10;eggs 12"></textarea></label>
-      <div class="row" style="margin-top:10px"><label>Type<select name="category"><option value="staple">staple</option><option value="fresh">fresh</option></select></label>
-      <button class="primary">Add all</button></div></form>
-    <h2>In the kitchen</h2>
-    ${rows.length ? `<div class="scroll"><table><tr><th>Item</th><th>Quantity</th><th>Unit</th><th>Use by</th></tr>
-      ${rows.map(p => `<tr><td>${esc(p.item)}</td><td><input aria-label="Quantity of ${esc(p.item)}" value="${esc(p.qty)}" inputmode="decimal" onchange="setField(${p._row}, 'qty', this.value)"></td><td>${esc(p.unit)}</td>
-        <td><input type="date" aria-label="Use by for ${esc(p.item)}" value="${esc(p.use_by)}" class="${p.use_by && p.use_by <= soonDate ? 'soon' : ''}" style="max-width:150px" onchange="setField(${p._row}, 'use_by', this.value)"></td></tr>`).join('')}
-    </table></div>` : '<p class="meta">The pantry is empty. Add items above, scan the fridge, or add a bill photo in Spend.</p>'}`;
-}
-function setField(row, f, v) { act({ action: 'savePantry', row: { ...data.pantry.find(p => p._row === row), [f]: v } }, 'Saved'); }
-
-function viewWeekly() {
-  const last = [...data.lists].reverse().find(l => l.kind === 'weekly');
-  const w = last && J(last.data, null);
-  const text = w ? 'Weekly list\n' + w.items.map(i => `- ${i.item} ${i.qty} ${i.unit}${i.note ? ` (${i.note})` : ''}`).join('\n') : '';
-  return `<h2>Weekly shopping list</h2><p class="meta">One order for the week, based on the pantry, wishes and what usually gets cooked.</p>
-    ${w ? `<p class="meta" style="margin-top:8px">Made ${esc(last.date)}. About AED ${esc(w.est_total_aed)}. Likely: ${esc(w.likely_dishes.join(', '))}.</p>
-      <ul class="todo">${w.items.map(i => `<li>${esc(i.item)} ${esc(i.qty)} ${esc(i.unit)}${i.note ? ` <span class="meta">(${esc(i.note)})</span>` : ''}</li>`).join('')}</ul>
-      <p class="row"><button onclick='sendToCook(this, ${esc(JSON.stringify(text))})'>Share list</button>` : '<p class="row" style="margin-top:10px">'}
-    <button class="primary" ${me ? '' : 'disabled'} onclick="busy(this,'Planning the week...');act({action:'weeklyList'},'Weekly list ready')">${w ? 'Make a new list' : 'Make this week\u2019s list'}</button></p>`;
-}
-
-async function scanPhoto(input) {
-  const f = input.files[0]; if (!f) return;
-  input.disabled = true; toast('Looking at the photo...');
-  const r = await act({ action: 'scanPantry', image: { mime: 'image/jpeg', data: await photoB64(f) } });
-  if (r) { scanItems = r.items.map(i => ({ ...i, keep: true })); render(); if (!scanItems.length) toast('No food items found. Try a closer photo.', true); }
-}
-function viewScan() {
-  if (!scanItems.length) return '';
-  return `<div class="person"><b>Found ${scanItems.length} items</b><p class="meta">Untick anything wrong and fix the amounts.</p>
-    <div class="scroll" style="margin-top:10px"><table><tr><th></th><th>Item</th><th>Quantity</th><th>Unit</th></tr>
-    ${scanItems.map((it, i) => `<tr><td><input type="checkbox" style="width:auto" ${it.keep ? 'checked' : ''} onchange="scanItems[${i}].keep=this.checked" aria-label="Keep ${esc(it.item)}"></td>
-      <td><input value="${esc(it.item)}" onchange="scanItems[${i}].item=this.value" style="max-width:none"></td>
-      <td><input value="${esc(it.qty)}" inputmode="decimal" onchange="scanItems[${i}].qty=this.value"></td><td>${esc(it.unit)}</td></tr>`).join('')}</table></div>
-    <p class="row" style="margin-top:12px"><button class="primary" onclick="addScanned(this)">Add to pantry</button><button onclick="scanItems=null;render()">Discard</button></p></div>`;
-}
 async function addScanned(btn) {
   busy(btn, 'Adding...');
   const r = await act({ action: 'pantryBulk', items: scanItems.filter(i => i.keep) });
@@ -676,25 +478,6 @@ function addItem(e) { e.preventDefault(); act({ action: 'savePantry', row: Objec
 
 
 // ---------- Spend ----------
-function viewSpend() {
-  const { spent, limit } = data.budget;
-  const pct = Math.min(100, spent / limit * 100);
-  const list = data.purchases.slice(-30).reverse();
-  return `<h2>This week</h2><p class="dish" style="font-size:40px">AED ${spent} <span class="meta" style="font-size:20px;font-weight:400">of ${limit}</span></p>
-    <div class="meter" role="img" aria-label="${Math.round(pct)}% of weekly budget"><i class="${spent > limit ? 'over' : ''}" style="width:${pct}%"></i></div>
-    <p class="meta">Fresh items from the last 7 days, plus staples averaged over ${esc(data.settings.STAPLES_SPREAD_WEEKS || 4)} weeks.</p>
-    <h2>Add a bill</h2><p class="meta">Take a straight photo of the whole bill. Items go into the pantry and the amount into the budget.</p>
-    <label class="filebtn">Photo of the bill<input type="file" accept="image/*" capture="environment" onchange="billPhoto(this)" ${me ? '' : 'disabled'}></label>
-    <p class="meta" id="billState"></p>
-    <h2>Spent without a bill</h2><form class="row person" onsubmit="addSpend(event)">
-      <label>Amount (AED)<input name="total" type="number" min="1" step="0.5" required></label>
-      <label>Type<select name="category"><option value="fresh">fresh</option><option value="staple">staple</option></select></label>
-      <label>Note<input name="note" placeholder="e.g. baqala vegetables"></label>
-      <button class="primary">Add amount</button></form>
-    <h2>Bills</h2>${list.length ? `<div class="scroll"><table><tr><th>Date</th><th>Store</th><th>Total</th><th>Staples</th><th>Fresh</th></tr>
-      ${list.map(p => `<tr><td>${esc(p.date)}</td><td>${esc(p.store)}</td><td>${esc(p.total)}</td><td>${esc(p.staples)}</td><td>${esc(p.fresh)}</td></tr>`).join('')}</table></div>`
-      : '<p class="meta">No bills yet.</p>'}`;
-}
 function addSpend(e) { e.preventDefault(); act({ action: 'spend', ...Object.fromEntries(new FormData(e.target)) }, 'Amount added'); }
 async function billPhoto(input) {
   const f = input.files[0]; if (!f) return;
@@ -704,11 +487,6 @@ async function billPhoto(input) {
 }
 
 // ---------- Setup ----------
-function viewAdminLogin() {
-  return `<p class="meta">Setup, settings, Go live and Pause are for the admin${data.adminEmail ? ` (${esc(data.adminEmail)})` : ''}.</p>
-    <form class="row person" onsubmit="adminLogin(event)"><label>Admin PIN<input name="pin" type="password" inputmode="numeric" autocomplete="off" required></label>
-    <button class="primary">Unlock admin</button></form>`;
-}
 async function adminLogin(e) {
   e.preventDefault();
   store.set('rasoi-admin', new FormData(e.target).get('pin'));
@@ -717,27 +495,303 @@ async function adminLogin(e) {
 }
 function adminLogout() { store.del('rasoi-admin'); refresh().then(() => toast('Admin locked on this device')); }
 
-function viewSetup() {
-  if (!data.isAdmin) return viewAdminLogin();
-  if (data.needsInit) return `<h2>Connect the Google Sheet</h2><p class="err">${esc(data.error)}</p>
-    <p>Share the sheet with the service account email, add the environment variables in Netlify, then create the tabs.</p>
-    <button class="primary" onclick="busy(this,'Creating...');act({action:'init'},'Sheet tabs created')">Create sheet tabs</button>`;
-  const live = data.settings.LIVE === 'TRUE', miss = data.readiness;
-  return `<p class="row"><span class="pill-tag ok">Admin</span><button class="who" onclick="adminLogout()">Lock admin on this device</button></p><h2>Go-live checklist</h2>
-    ${miss.length ? `<ul class="todo">${miss.map(m => `<li>${esc(m)}</li>`).join('')}</ul>` : '<p class="done">Everything is ready.</p>'}
-    <p class="row">${live ? `<span class="done">Live. The vote opens daily at 12:00.</span><button onclick="act({action:'pause'},'Paused')">Pause</button>`
-      : `<button class="primary" ${miss.length ? 'disabled' : ''} onclick="act({action:'goLive'},'Rasoi is live')">Go live</button>`}</p>
-    <h2>Try it first</h2><p class="meta">See today's three options without notifying anyone.</p>
-    <p class="row"><button onclick="runPreview(this)">Preview today's options</button>
-      ${me ? `<button onclick="act({action:'testPush'},'Test sent')">Send me a test notification</button>` : ''}
-      <button onclick="act({action:'init'},'Sheet tabs checked')">Repair sheet tabs</button></p>
-    ${preview ? `<div>${preview.map((o, i) => `<div class="opt"><b>${i + 1}. ${esc(o.name)}</b><span>AED ${esc(o.est_cost_aed)}</span><span class="meta">${esc(o.summary)} About ${esc(o.cook_minutes)} min, ${esc(o.missing_items)} to buy.</span></div>`).join('')}</div>` : ''}
-    <h2>Settings</h2><form class="person" onsubmit="saveSettings(event)"><div class="grid">
-      ${Object.entries(data.settings).filter(([k]) => k !== 'LIVE').map(([k, v]) => `<label>${esc(k.replaceAll('_', ' ').toLowerCase())}<input name="${esc(k)}" value="${esc(v)}"></label>`).join('')}
-    </div><button class="primary">Save settings</button></form>`;
-}
 async function runPreview(b) { busy(b, 'Thinking...'); const r = await act({ action: 'preview' }); if (r) { preview = r.options; render(); } }
 function saveSettings(e) { e.preventDefault(); act({ action: 'saveSettings', settings: Object.fromEntries(new FormData(e.target)) }, 'Settings saved'); }
+
+// ---------- building blocks ----------
+const TINT = { orange: '#FF8A00', green: '#22A447', blue: '#0A7CFF', purple: '#8E44D9', pink: '#E8467C', teal: '#14A3B8', yellow: '#D9A400', red: '#E5383B', indigo: '#5856D6', gray: '#8A8A93' };
+const tile = (icon, color) => `<span class="tile" style="--t:${TINT[color]}">${ICON[icon]}</span>`;
+const avatar = name => `<span class="tile av" style="--t:hsl(${hue(name)} 62% 50%)">${esc(initials(name))}</span>`;
+// Remember which rows are open, so refreshes and actions don't fold them shut.
+const openState = J(store.get('rasoi-open'), {});
+document.addEventListener('toggle', e => {
+  const k = e.target.dataset?.k; if (!k) return;
+  openState[k] = e.target.open; store.set('rasoi-open', JSON.stringify(openState));
+}, true);
+function row(k, lead, title, sub, body, def = false, extra = '') {
+  const open = k in openState ? openState[k] : def;
+  return `<details class="item" data-k="${k}" ${open ? 'open' : ''}><summary>${lead}<span class="tt"><b>${title}</b>${sub ? `<small>${sub}</small>` : ''}</span>${extra}${ICON.chev}</summary><div class="ib">${body}</div></details>`;
+}
+const group = (rows, title = '') => (rows = rows.filter(Boolean)).length ? `${title ? `<h3>${title}</h3>` : '<div style="height:12px"></div>'}<div class="group">${rows.join('')}</div>` : '';
+const canEdit = owner => data.isAdmin || (owner && owner === me);
+const ownerNote = owner => `<p class="meta">${owner ? `Added by ${esc(owner)}. Only they or the admin can change it.` : 'Only the admin can change this.'}</p>`;
+function saveOwned(e, tab, rowNo) {
+  e.preventDefault();
+  const values = Object.fromEntries(new FormData(e.target));
+  if (tab === 'Purchases') values.total = (+values.fresh || 0) + (+values.staples || 0);
+  act({ action: 'change', tab, row: rowNo, values }, 'Saved');
+}
+const delOwned = (tab, rowNo, what) => confirm(`Delete ${what}?`) && act({ action: 'change', tab, row: rowNo, remove: true }, 'Deleted');
+
+// ---------- login, person, notifications ----------
+function viewLogin(msg) {
+  return `${msg ? `<div class="banner err">${esc(msg)}</div>` : ''}
+    <form class="person row" onsubmit="login(event)"><label style="flex:1">Household password<input name="pw" type="password" required autocomplete="current-password"></label>
+    <button class="primary">Open Rasoi</button></form>`;
+}
+function viewWho() {
+  if (pinFor) return viewPin();
+  return `<p class="meta" style="margin:0 4px 10px">Votes and notifications go to this person.</p>`
+    + group(data.members.filter(m => m.role !== 'cook').map(m => `<button class="item" style="all:unset;display:block;width:100%;cursor:pointer;border-bottom:1px solid var(--hair)" onclick="pick('${esc(m.name)}')">
+      <span style="display:flex;align-items:center;gap:12px;padding:12px 14px">${avatar(m.name)}<span class="tt"><b>${esc(m.name)}</b><small>${m.has_pin ? 'Enter PIN' : 'Set a PIN'}</small></span>${ICON.chev}</span></button>`));
+}
+function viewPin() {
+  const set = pinMode === 'set';
+  return `<form class="person pin" onsubmit="submitPin(event)">
+    <div style="display:flex;align-items:center;gap:12px">${avatar(pinFor)}<div class="tt"><b>${esc(pinFor)}</b><small>${set ? 'Choose a 4 to 6 digit PIN' : 'Enter your PIN'}</small></div></div>
+    <label style="margin-top:14px">${set ? 'New PIN' : 'PIN'}<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,6}" maxlength="6" autocomplete="off" required autofocus></label>
+    <div class="actions"><button class="primary">${set ? 'Save PIN' : 'Continue'}</button><button type="button" onclick="pinFor=null;render()">Back</button></div></form>`;
+}
+function pushBanner() {
+  if (!me || data.needsInit || data.subs.some(s => s.member === me)) return '';
+  if (isIOS && !standalone) return `<div class="banner">To get notifications on iPhone: Share, then Add to Home Screen, and open Rasoi from there.</div>`;
+  return group([row('push', tile('bell', 'red'), 'Turn on notifications', 'Get the daily vote on this phone',
+    `<button class="primary" onclick="enablePush(this)">Turn on notifications</button>`, true)]);
+}
+
+// ---------- Today ----------
+function viewToday() {
+  const d = data.days.find(x => x.date === data.today);
+  let h = data.settings.LIVE === 'TRUE' ? '' : `<div class="banner">${data.isAdmin ? 'Rasoi is not live yet, so no notifications go out. Finish the checklist in Setup.' : 'Rasoi is paused. The admin switches it on in Setup.'}</div>`;
+  const rows = [];
+  if (!d) {
+    h += `<section class="plate"><span class="pill-tag">${ICON.clock}Vote opens at 12:00</span><div class="dish">Nothing decided yet</div>
+      <p class="meta">Three combos arrive at noon. Voting closes at 1pm.</p>
+      ${data.isAdmin ? `<div class="actions"><button class="primary" onclick="busy(this,'Starting...');act({action:'startVote'},'Vote started')">Start the vote now</button></div>` : ''}</section>`;
+  } else if (d.status === 'voting') {
+    const opts = J(d.options, []), latest = {};
+    data.votes.filter(v => v.date === d.date).forEach(v => latest[v.member] = +v.option);
+    const tally = opts.map((_, i) => Object.values(latest).filter(n => n === i + 1).length);
+    const lead = opts[tally.indexOf(Math.max(...tally))], votes = Object.keys(latest).length, mine = latest[me];
+    h += `<section class="plate">${votes ? `<div class="photo" data-dish="${esc(lead?.name)}"></div>` : ''}
+      <div class="plate-head"><span class="pill-tag">${ICON.clock}Voting until 1pm${d.mode === 'off' ? ', cook off' : ''}</span>${ring()}</div>
+      <div class="dish">${esc(lead?.name)}</div>
+      <p class="meta">${votes ? `Leading, ${votes} of ${data.family.length} voted` : 'No votes yet'}</p>${voters(latest)}
+      ${data.isAdmin ? `<div class="actions"><button onclick="busy(this,'Closing...');act({action:'closeVote'},'Vote closed')">Close the vote now</button></div>` : ''}</section>`;
+    rows.push(row('options', tile('list', 'orange'), 'Options', mine ? `You voted for ${esc(opts[mine - 1]?.name)}` : 'Tap to vote',
+      opts.map((o, i) => `<div class="opt"><b>${i + 1}. ${esc(o.name)}</b><span>${tally[i]} vote${tally[i] === 1 ? '' : 's'}</span>
+        <span class="meta">${esc(o.summary)} About ${esc(o.cook_minutes)} min, AED ${esc(o.est_cost_aed)}, ${esc(o.missing_items)} to buy.</span>
+        <span class="bar"><i style="width:${data.family.length ? tally[i] / data.family.length * 100 : 0}%"></i></span>
+        <span class="choice"><button aria-pressed="${mine === i + 1}" onclick="this.disabled=true;act({action:'vote',n:${i + 1}},'Vote saved')">${mine === i + 1 ? 'Your vote' : 'Vote for this'}</button></span></div>`).join(''), !mine));
+  } else {
+    const w = J(d.winner, {}), r = J(d.recipe, null), miss = J(d.missing, []);
+    const label = { decided: 'Cooking tonight', cooked: 'Cooked', postponed: 'Moved to tomorrow', off: 'Cook is off today', skip: 'Eating out today' }[d.status] || d.status;
+    h += `<section class="plate">${w.name ? `<div class="photo" data-dish="${esc(w.name)}"></div>` : ''}
+      <span class="pill-tag ${['decided', 'cooked'].includes(d.status) ? 'ok' : ''}">${ICON.check}${esc(label)}</span>
+      <div class="dish">${esc(w.name || (d.status === 'skip' ? 'Eating out' : 'Cook is off'))}</div>
+      ${w.summary ? `<p class="meta">${esc(w.summary)}</p>` : ''}
+      ${r?.warning ? `<p class="warn">${esc(r.warning)}</p>` : ''}
+      <div class="actions">
+        ${d.status === 'decided' ? `<button class="primary" onclick="this.disabled=true;act({action:'cooked'},'Marked as cooked. Pantry updated.')">Mark as cooked</button>` : ''}
+        ${d.status === 'skip' ? `<button class="primary" onclick='sendToCook(this, ${esc(JSON.stringify('आज खाना नहीं बनेगा, हम बाहर खा रहे हैं। No cooking today, we are eating out.'))})'>Tell the cook</button>` : ''}
+        ${data.isAdmin && ['off', 'skip'].includes(d.status) ? `<button onclick="busy(this,'Starting...');act({action:'startVote'},'Vote started')">Start a vote anyway</button>` : ''}
+      </div></section>`;
+    if (miss.length && d.status === 'decided') rows.push(row('buy', tile('cart', 'green'), 'To buy',
+      `${miss.length} item${miss.length === 1 ? '' : 's'}, ${data.buyer ? `${esc(data.buyer === me ? 'you are' : data.buyer + ' is')} buying` : 'nobody is buying yet'}`, shoppingBody(miss), !data.buyer));
+    if (r) rows.push(row('recipe', tile('chef', 'purple'), 'Recipe', r.total_minutes ? `About ${esc(r.total_minutes)} minutes` : '', recipeBody(w, r, d)));
+  }
+  rows.push(viewTonight(d), viewRate(), viewWishes(), viewFavourites(), viewPast());
+  return h + group(rows);
+}
+function shoppingBody(miss) {
+  const b = data.buyer;
+  return `<ul class="todo">${miss.map(m => `<li>${esc(m.item)} <span class="meta">${esc(m.qty)} ${esc(m.unit)}</span></li>`).join('')}</ul>
+    <div class="actions">${!b ? `<button class="primary" onclick="this.disabled=true;act({action:'buying'},'Everyone has been told')">I am buying these</button>`
+      : b === me ? `<button onclick="this.disabled=true;act({action:'release'},'Handed back')">I cannot buy after all</button>` : `<span class="meta">${esc(b)} is buying.</span>`}</div>`;
+}
+function recipeBody(w, r, d) {
+  const steps = a => `<ol>${(a || []).map(s => `<li>${esc(s)}</li>`).join('')}</ol>`;
+  return `${r.variants_en ? `<p class="meta">${esc(r.variants_en)}</p>` : ''}${steps(r.steps_en).replace('<ol>', '<ol style="padding-left:18px;margin:6px 0">')}
+    <details class="sub" lang="hi"><summary>हिंदी में</summary>${r.variants_hi ? `<p class="meta">${esc(r.variants_hi)}</p>` : ''}${steps(r.steps_hi)}</details>
+    <details class="sub"><summary>Ingredients</summary><ul class="todo">${(r.ingredients || []).map(i => `<li>${esc(i.item)} <span class="meta">${esc(i.qty)} ${esc(i.unit)}</span></li>`).join('')}</ul></details>
+    ${d.status === 'decided' ? `<div class="actions"><button class="primary" onclick='sendToCook(this, ${esc(JSON.stringify(cookText(w, r, 'hi')))})'>${ICON.share}Send to cook (Hindi)</button>
+      <button onclick='sendToCook(this, ${esc(JSON.stringify(cookText(w, r, 'en')))})'>English</button></div>` : ''}`;
+}
+function viewTonight(d) {
+  if (d && !['voting', 'decided'].includes(d.status)) return '';
+  const t = data.tonight, away = t.away.includes(me);
+  const sub = [t.away.length ? `${t.away.join(', ')} away` : 'Everyone at home', t.guests ? `${t.guests} guest${t.guests === 1 ? '' : 's'}` : ''].filter(Boolean).join(', ');
+  return row('tonight', tile('users', 'teal'), 'Tonight', esc(sub), `<p class="meta">Changes before 1pm adjust the portions.</p>
+    <div class="actions"><button onclick="this.disabled=true;act({action:'tonight',type:'${away ? 'home' : 'away'}'},'Saved')">${away ? 'I am eating tonight after all' : 'I am not eating tonight'}</button></div>
+    <div class="row" style="margin-top:10px"><label style="max-width:130px">Guests for dinner<input id="guests" type="number" min="0" max="30" value="${t.guests}"></label>
+      <button onclick="this.disabled=true;act({action:'tonight',type:'guests',count:$('#guests').value},'Guests saved')">Save</button></div>
+    <div class="actions"><button onclick="if(confirm('Mark the cook as off today?')){this.disabled=true;act({action:'skipToday',reason:'cook_off'},'Day off noted')}">Cook is off today</button>
+      <button onclick="if(confirm('No cooking today?')){this.disabled=true;act({action:'skipToday',reason:'skip'},'No cooking today')}">Eating out</button></div>`);
+}
+function viewRate() {
+  const last = [...data.days].reverse().find(d => d.date <= data.today && ['cooked', 'decided'].includes(d.status));
+  const yesterday = new Date(Date.parse(data.today) - 864e5).toISOString().slice(0, 10);
+  if (!last || last.date < yesterday || !me) return '';
+  if (last.status === 'decided' && last.date === data.today && (new Date().getUTCHours() + 4) % 24 < 19) return '';
+  const dish = J(last.winner, {}).name, mine = data.feedback.find(f => f.date === last.date && f.member === me);
+  return row('rate', tile('star', 'yellow'), `Rate ${esc(dish)}`, mine ? `You gave ${esc(mine.rating)} of 5` : 'How was it?',
+    `<form onsubmit="event.preventDefault()"><div class="choice">${[1, 2, 3, 4, 5].map(n => `<button aria-pressed="${+mine?.rating === n}" onclick="this.disabled=true;act({action:'rate',n:${n},comment:$('#rc').value},'Rating saved')">${n}</button>`).join('')}</div>
+    <label style="margin-top:10px">Comment (optional)<input id="rc" value="${esc(mine?.comment)}" placeholder="e.g. a bit too spicy"></label></form>`, !mine);
+}
+const wishCutoff = () => new Date(Date.parse(data.today) - 21 * 864e5).toISOString().slice(0, 10);
+function viewWishes() {
+  const open = data.wishes.filter(w => !w.status && w.date >= wishCutoff());
+  return row('wishes', tile('heart', 'pink'), 'Dish wishes', open.length ? `${open.length} waiting` : 'Wish for a dish',
+    `<p class="meta">A wish comes up as a vote option within a few days.</p>
+    ${open.map(w => canEdit(w.member)
+      ? `<form class="row" style="margin-top:8px" onsubmit="saveOwned(event,'Wishes',${w._row})"><label style="flex:1">${esc(w.member)}<input name="dish" value="${esc(w.dish)}" maxlength="80"></label>
+          <button>Save</button><button type="button" class="danger" onclick="delOwned('Wishes',${w._row},'this wish')">Delete</button></form>`
+      : `<p style="margin:8px 0 0">${esc(w.dish)} <span class="meta">${esc(w.member)}</span></p>`).join('')}
+    ${me ? `<form class="row" style="margin-top:12px" onsubmit="event.preventDefault();act({action:'addWish',dish:this.dish.value},'Wish added')">
+      <label style="flex:1">New wish<input name="dish" maxlength="80" required placeholder="e.g. Rajma chawal"></label><button class="primary">Add</button></form>` : ''}`);
+}
+function viewFavourites() {
+  const by = {};
+  data.feedback.forEach(f => (by[f.dish] ||= []).push(+f.rating));
+  const fav = Object.entries(by).map(([dish, r]) => [dish, r.reduce((a, b) => a + b, 0) / r.length]).filter(([, a]) => a >= 4).sort((a, b) => b[1] - a[1]).slice(0, 10);
+  if (!fav.length) return '';
+  return row('fav', tile('sparkle', 'yellow'), 'Family favourites', `${fav.length} dish${fav.length === 1 ? '' : 'es'} rated 4+`,
+    `<ul class="todo">${fav.map(([dish, avg]) => `<li style="display:flex;align-items:center;gap:8px"><span style="flex:1">${esc(dish)} <span class="meta">${avg.toFixed(1)}</span></span>
+      ${me ? `<button class="who" onclick="act({action:'addWish',dish:${esc(JSON.stringify(dish))}},'Added to wishes')">Again</button>` : ''}</li>`).join('')}</ul>`);
+}
+function viewPast() {
+  const past = data.days.filter(x => x.date < data.today && x.winner).slice(-7).reverse();
+  if (!past.length) return '';
+  return row('past', tile('calendar', 'blue'), 'Last few days', `${past.length} meals`,
+    `<ul class="todo">${past.map(x => `<li>${esc(J(x.winner, {}).name)} <span class="meta">${esc(x.date.slice(5))}, ${esc(x.status)}</span></li>`).join('')}</ul>`);
+}
+
+// ---------- Family ----------
+function viewFamily() {
+  const admin = data.isAdmin;
+  const rows = data.members.map((m, i) => {
+    const sub = m.role === 'cook' ? 'Cook' : [m.diet || 'diet not set', !m.allergies ? 'allergies not set' : m.allergies === 'none' ? 'no allergies' : `allergy: ${m.allergies}`, m.diet_plan ? 'diet plan' : ''].filter(Boolean).join(', ');
+    const body = admin || m.name === me ? memberForm(m, i)
+      : `<p>${esc(m.diet || 'Diet not set')}. Allergies: ${esc(m.allergies || 'not set')}.</p>${m.favourites ? `<p class="meta">Likes ${esc(m.favourites)}</p>` : ''}${m.diet_plan ? `<p class="meta">Has a diet plan.</p>` : ''}`;
+    return row('m' + m._row, avatar(m.name), esc(m.name) + (m.name === me ? ' <span class="meta">(you)</span>' : ''), esc(sub), body);
+  });
+  if (admin) rows.push(row('newperson', tile('plus', 'green'), 'Add a person', 'Family member or cook', memberForm({ role: 'family' }, data.members.length)));
+  return `<p class="meta" style="margin:0 4px">${admin ? 'You are the admin: you can add, edit and remove anyone.' : 'Tap your name to edit your profile. Allergies are never broken.'}</p>` + group(rows);
+}
+function memberForm(m, i) {
+  const admin = data.isAdmin, locked = f => !admin && (f === 'name' || f === 'role');
+  return `<form data-i="${i}" onsubmit="saveMember(event)"><div class="grid">${FIELDS.map(([f, l, x]) => `<label>${l}${Array.isArray(x)
+    ? `<select name="${f}" ${locked(f) ? 'disabled' : ''}>${x.map(o => `<option ${o === (m[f] || '') ? 'selected' : ''} value="${o}">${o || 'choose'}</option>`).join('')}</select>`
+    : `<input name="${f}" value="${esc(m[f])}" placeholder="${esc(x || '')}" ${f === 'name' ? 'required' : ''} ${locked(f) ? 'disabled' : ''}>`}</label>`).join('')}</div>
+    <div class="actions"><button class="primary">${m._row ? 'Save' : 'Add person'}</button>
+      ${m.name === me ? `<button type="button" onclick="changePin()">${ICON.lock}Change PIN</button>` : ''}
+      ${admin && m.has_pin && m.name !== me ? `<button type="button" onclick="if(confirm('Reset this PIN?'))act({action:'resetPin',member:data.members[${i}].name},'PIN reset')">Reset PIN</button>` : ''}
+      ${admin && m._row && m.name !== me ? `<button type="button" class="danger" onclick="if(confirm('Remove ${esc(m.name)} from Rasoi?'))act({action:'deleteMember',row:${m._row}},'Removed')">Remove</button>` : ''}</div>
+    ${m._row && m.role !== 'cook' ? viewPlan(m, i) : ''}</form>`;
+}
+function viewPlan(m, i) {
+  return `<details class="sub" style="margin-top:14px"><summary>Diet plan ${m.diet_plan ? `<span class="meta">updated ${esc(m.diet_plan_updated)}</span>` : '<span class="meta">none yet</span>'}</summary>
+    ${m.diet_plan ? `<p style="margin:8px 0">${fmt(m.diet_plan)}</p>` : '<p class="meta" style="margin:8px 0">Upload one from a dietitian or app, or paste it.</p>'}
+    <label class="filebtn">${ICON.camera}Upload PDF or photo<input type="file" accept="application/pdf,image/*" onchange="planFile(this, ${i})"></label>
+    <label style="margin-top:10px">Or paste it<textarea id="plan${i}" rows="3" placeholder="e.g. 1500 kcal, high protein, max 2 rotis at dinner"></textarea></label>
+    <div class="actions"><button type="button" onclick="planText(this, ${i})">Save pasted plan</button>
+    ${m.diet_plan ? `<button type="button" class="danger" onclick="if(confirm('Remove this diet plan?'))act({action:'dietPlan',member:data.members[${i}].name,remove:true},'Plan removed')">Remove plan</button>` : ''}</div></details>`;
+}
+
+// ---------- Pantry ----------
+let scanItems = null;
+function viewPantry() {
+  const soonDate = new Date(Date.parse(data.today) + 3 * 864e5).toISOString().slice(0, 10);
+  const items = [...data.pantry].sort((a, b) => (a.use_by || '9').localeCompare(b.use_by || '9') || a.item.localeCompare(b.item));
+  const soon = items.filter(p => p.use_by && p.use_by <= soonDate && +p.qty > 0);
+  const tools = [
+    soon.length ? row('usefirst', tile('flame', 'red'), 'Use first', esc(soon.map(p => p.item).join(', ')),
+      `<ul class="todo">${soon.map(p => `<li>${esc(p.item)} <span class="soon">${esc(p.use_by)}</span></li>`).join('')}</ul><p class="meta">Suggestions use these before anything else.</p>`, true) : '',
+    viewWeekly(),
+    row('scan', tile('camera', 'blue'), 'Scan the fridge', scanItems ? `${scanItems.length} found, check them` : 'Photo of the fridge or a shelf',
+      `<p class="meta">You check the list before anything is added.</p><div class="actions"><label class="filebtn">${ICON.camera}Take a photo<input type="file" accept="image/*" capture="environment" onchange="scanPhoto(this)" ${me ? '' : 'disabled'}></label></div>${scanItems ? viewScan() : ''}`, !!scanItems),
+    row('additems', tile('plus', 'green'), 'Add items', 'One item, or many at once',
+      `<form class="grid" onsubmit="addItem(event)" style="margin-top:4px">
+        <label>Item<input name="item" required placeholder="e.g. toor dal"></label><label>Quantity<input name="qty" required inputmode="decimal"></label>
+        <label>Unit<select name="unit">${['kg', 'g', 'l', 'ml', 'pcs', 'pack'].map(u => `<option>${u}</option>`).join('')}</select></label>
+        <label>Type<select name="category"><option value="fresh">fresh</option><option value="staple">staple</option></select></label>
+        <label>Use by<input name="use_by" type="date"></label><div style="align-self:end"><button class="primary">Add</button></div></form>
+      <form onsubmit="addBulk(event)"><label>Many at once, one per line<textarea name="lines" rows="4" placeholder="toor dal 2 kg&#10;paneer 400 g&#10;eggs 12"></textarea></label>
+        <div class="row" style="margin-top:8px"><label style="max-width:140px">Type<select name="category"><option value="staple">staple</option><option value="fresh">fresh</option></select></label><button class="primary">Add all</button></div></form>`),
+  ];
+  const kitchen = items.map(p => row('p' + p._row, tile(p.category === 'staple' ? 'jar' : 'leaf', p.category === 'staple' ? 'yellow' : 'green'), esc(p.item),
+    `${esc(p.qty)} ${esc(p.unit)}${p.use_by ? `, use by <span class="${p.use_by <= soonDate ? 'soon' : ''}">${esc(p.use_by.slice(5))}</span>` : ''}`,
+    canEdit(p.added_by) ? `<form class="grid" onsubmit="saveOwned(event,'Pantry',${p._row})">
+        <label>Quantity<input name="qty" value="${esc(p.qty)}" inputmode="decimal"></label>
+        <label>Unit<select name="unit">${['kg', 'g', 'l', 'ml', 'pcs', 'pack', p.unit].filter((u, i, a) => u && a.indexOf(u) === i).map(u => `<option ${u === p.unit ? 'selected' : ''}>${esc(u)}</option>`).join('')}</select></label>
+        <label>Use by<input name="use_by" type="date" value="${esc(p.use_by)}"></label>
+        <div class="actions" style="grid-column:1/-1;margin:0"><button class="primary">Save</button><button type="button" class="danger" onclick="delOwned('Pantry',${p._row},'${esc(p.item)}')">Delete</button></div></form>`
+      : ownerNote(p.added_by)));
+  return `<p class="meta" style="margin:0 4px">Bills, fridge photos and "cooked" keep this up to date.</p>`
+    + group(tools) + (kitchen.length ? group(kitchen, `In the kitchen (${kitchen.length})`) : '<p class="meta" style="margin:16px 4px">The pantry is empty. Add items above, scan the fridge, or add a bill in Spend.</p>');
+}
+function viewWeekly() {
+  const last = [...data.lists].reverse().find(l => l.kind === 'weekly');
+  const w = last && J(last.data, null);
+  const text = w ? 'Weekly list\n' + w.items.map(i => `- ${i.item} ${i.qty} ${i.unit}${i.note ? ` (${i.note})` : ''}`).join('\n') : '';
+  return row('weekly', tile('cart', 'orange'), 'Weekly shopping list', w ? `${w.items.length} items, about AED ${esc(w.est_total_aed)}` : 'One order for the week',
+    `${w ? `<p class="meta">Made ${esc(last.date)}. Likely: ${esc(w.likely_dishes.join(', '))}.</p>
+      <ul class="todo">${w.items.map(i => `<li>${esc(i.item)} <span class="meta">${esc(i.qty)} ${esc(i.unit)}${i.note ? `, ${esc(i.note)}` : ''}</span></li>`).join('')}</ul>` : '<p class="meta">Based on the pantry, wishes and what usually gets cooked.</p>'}
+    <div class="actions">${w ? `<button onclick='sendToCook(this, ${esc(JSON.stringify(text))})'>${ICON.share}Share</button>` : ''}
+      <button class="primary" ${me ? '' : 'disabled'} onclick="busy(this,'Planning...');act({action:'weeklyList'},'Weekly list ready')">${w ? 'New list' : 'Make the list'}</button></div>`);
+}
+function viewScan() {
+  if (!scanItems.length) return '';
+  return `<div class="scroll" style="margin-top:10px"><table><tr><th></th><th>Item</th><th>Qty</th><th>Unit</th></tr>
+    ${scanItems.map((it, i) => `<tr><td><input type="checkbox" ${it.keep ? 'checked' : ''} onchange="scanItems[${i}].keep=this.checked" aria-label="Keep ${esc(it.item)}"></td>
+      <td><input value="${esc(it.item)}" onchange="scanItems[${i}].item=this.value"></td>
+      <td><input value="${esc(it.qty)}" inputmode="decimal" style="max-width:70px" onchange="scanItems[${i}].qty=this.value"></td><td>${esc(it.unit)}</td></tr>`).join('')}</table></div>
+    <div class="actions"><button class="primary" onclick="addScanned(this)">Add to pantry</button><button onclick="scanItems=null;render()">Discard</button></div>`;
+}
+
+// ---------- Spend ----------
+function viewSpend() {
+  const { spent, limit } = data.budget, pct = Math.min(100, spent / limit * 100);
+  const bills = data.purchases.slice(-30).reverse();
+  return `<section class="plate"><span class="pill-tag ${spent > limit ? '' : 'ok'}">${ICON.wallet}This week</span>
+      <div class="big" style="margin-top:8px">AED ${spent} <span class="meta" style="font-size:15px;font-weight:500">of ${limit}</span></div>
+      <div class="meter" role="img" aria-label="${Math.round(pct)}% of weekly budget"><i class="${spent > limit ? 'over' : ''}" style="width:${pct}%"></i></div>
+      <p class="meta">Fresh items from the last 7 days, plus staples spread over ${esc(data.settings.STAPLES_SPREAD_WEEKS || 4)} weeks.</p></section>`
+    + group([
+      row('bill', tile('receipt', 'blue'), 'Add a bill', 'Photo of the whole bill',
+        `<p class="meta">Items go into the pantry and the amount into the budget.</p><div class="actions"><label class="filebtn">${ICON.camera}Photo of the bill<input type="file" accept="image/*" capture="environment" onchange="billPhoto(this)" ${me ? '' : 'disabled'}></label></div><p class="meta" id="billState"></p>`),
+      row('nobill', tile('wallet', 'teal'), 'Spent without a bill', 'Add an amount by hand',
+        `<form class="grid" onsubmit="addSpend(event)"><label>Amount (AED)<input name="total" type="number" min="1" step="0.5" required></label>
+          <label>Type<select name="category"><option value="fresh">fresh</option><option value="staple">staple</option></select></label>
+          <label>Note<input name="note" placeholder="e.g. baqala vegetables"></label><div style="align-self:end"><button class="primary">Add</button></div></form>`),
+    ])
+    + group(bills.map(p => row('b' + p._row, tile('receipt', 'gray'), esc(p.store || 'Purchase'), `${esc(p.date.slice(5))}, AED ${esc(p.total)}`,
+      `${J(p.items, []).length ? `<ul class="todo">${J(p.items, []).map(i => `<li>${esc(i.item)} <span class="meta">${esc(i.qty)} ${esc(i.unit)}${i.price ? `, AED ${esc(i.price)}` : ''}</span></li>`).join('')}</ul>` : ''}
+      ${canEdit(p.added_by) ? `<form class="grid" style="margin-top:8px" onsubmit="saveOwned(event,'Purchases',${p._row})">
+          <label>Store<input name="store" value="${esc(p.store)}"></label><label>Fresh (AED)<input name="fresh" value="${esc(p.fresh)}" inputmode="decimal"></label>
+          <label>Staples (AED)<input name="staples" value="${esc(p.staples)}" inputmode="decimal"></label>
+          <div class="actions" style="grid-column:1/-1;margin:0"><button class="primary">Save</button><button type="button" class="danger" onclick="delOwned('Purchases',${p._row},'this bill')">Delete</button></div></form>
+        <p class="meta" style="margin-top:6px">Deleting a bill removes its amount. Pantry items stay; change them in Pantry.</p>` : ownerNote(p.added_by)}`)), bills.length ? 'Bills' : '');
+}
+
+// ---------- Setup (admin) ----------
+function viewAdminLogin() {
+  return `<p class="meta" style="margin:0 4px 10px">Setup, settings, Go live and Pause are for the admin${data.adminEmail ? ` (${esc(data.adminEmail)})` : ''}.</p>
+    <form class="person row" onsubmit="adminLogin(event)"><label style="flex:1">Admin PIN<input name="pin" type="password" inputmode="numeric" autocomplete="off" required></label>
+    <button class="primary">${ICON.lock}Unlock</button></form>`;
+}
+function viewSetup() {
+  if (!data.isAdmin) return viewAdminLogin();
+  if (data.needsInit) return `<div class="banner err">${esc(data.error)}</div><div class="person"><p style="margin-top:0">Share the sheet with the service account email, add the environment variables in Netlify, then create the tabs.</p>
+    <button class="primary" onclick="busy(this,'Creating...');act({action:'init'},'Sheet tabs created')">Create sheet tabs</button></div>`;
+  const live = data.settings.LIVE === 'TRUE', miss = data.readiness;
+  return `<section class="plate"><span class="pill-tag ${live ? 'ok' : ''}">${live ? ICON.check + 'Live' : ICON.clock + 'Not live'}</span>
+      <div class="dish">${live ? 'Rasoi is running' : miss.length ? `${miss.length} thing${miss.length === 1 ? '' : 's'} left` : 'Ready to go live'}</div>
+      <p class="meta">${live ? 'The vote opens daily at 12:00.' : 'Go live sends the daily vote to everyone.'}</p>
+      <div class="actions">${live ? `<button onclick="act({action:'pause'},'Paused')">Pause</button>` : `<button class="primary" ${miss.length ? 'disabled' : ''} onclick="act({action:'goLive'},'Rasoi is live')">Go live</button>`}</div></section>`
+    + group([
+      row('check', tile('check', miss.length ? 'orange' : 'green'), 'Go-live checklist', miss.length ? `${miss.length} left` : 'All done',
+        miss.length ? `<ul class="todo">${miss.map(m => `<li>${esc(m)}</li>`).join('')}</ul>` : '<p class="done">Everything is ready.</p>', !!miss.length && !live),
+      row('try', tile('sparkle', 'purple'), 'Try it', 'Preview options, test a notification',
+        `<div class="actions" style="margin-top:0"><button onclick="runPreview(this)">Preview today's options</button>${me ? `<button onclick="act({action:'testPush'},'Test sent')">Test notification</button>` : ''}
+          <button onclick="act({action:'init'},'Sheet tabs checked')">Repair sheet tabs</button></div>
+        ${preview ? preview.map((o, i) => `<div class="opt"><b>${i + 1}. ${esc(o.name)}</b><span>AED ${esc(o.est_cost_aed)}</span><span class="meta">${esc(o.summary)} About ${esc(o.cook_minutes)} min.</span></div>`).join('') : ''}`, !!preview),
+      row('settings', tile('gear', 'gray'), 'Settings', 'Budget, cook day, cooking time and more',
+        `<form onsubmit="saveSettings(event)"><div class="grid">${Object.entries(data.settings).filter(([k]) => k !== 'LIVE').map(([k, v]) => `<label>${esc(k.replaceAll('_', ' ').toLowerCase())}<input name="${esc(k)}" value="${esc(v)}"></label>`).join('')}</div>
+          <button class="primary">Save settings</button></form>`),
+      row('lock', tile('lock', 'red'), 'Lock admin on this phone', 'You will need the PIN again', `<button onclick="adminLogout()">Lock admin</button>`),
+    ]);
+}
 
 // ---------- staying fresh in the home-screen app (no browser reload there) ----------
 const typing = () => /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName);

@@ -20,7 +20,7 @@ const save = (tab, row) => row._row ? S.update(tab, +row._row, row) : S.append(t
 
 // Admin = whoever knows ADMIN_PIN (sent as x-admin-pin on top of the household password).
 const isAdmin = req => !!process.env.ADMIN_PIN && req.headers.get('x-admin-pin') === process.env.ADMIN_PIN;
-const ADMIN_ONLY = new Set(['init', 'saveSettings', 'goLive', 'pause', 'preview', 'startVote', 'closeVote', 'resetPin']);
+const ADMIN_ONLY = new Set(['init', 'saveSettings', 'goLive', 'pause', 'preview', 'startVote', 'closeVote', 'resetPin', 'deleteMember']);
 const NO_PIN_CHECK = new Set(['init', 'verifyPin', 'setPin']);
 const slow = () => new Promise(r => setTimeout(r, 600));
 
@@ -43,7 +43,7 @@ export default async (req) => {
     }
   }
 
-  const { action, me, row, settings, n, comment, image, subscription, reason, type, count, items, total, category, note, messages, member, file, text, remove, pin, dish } = await req.json();
+  const { action, me, row, settings, n, comment, image, subscription, reason, type, count, items, total, category, note, messages, member, file, text, remove, pin, dish, tab, values } = await req.json();
   if (ADMIN_ONLY.has(action) && !admin) return err('Only the admin can do this. Enter the admin PIN in Setup.', 403);
   try {
     if (action === 'init') { await S.init(); return ok(); }
@@ -83,9 +83,15 @@ export default async (req) => {
         const existing = row._row ? ctx.members.find(m => m._row === +row._row) : null;
         await save('Members', { ...existing, ...row, name: row.name.trim(), pin_hash: existing?.pin_hash || '' }); return ok();
       }
-      case 'savePantry':
+      case 'savePantry': // new items only; changes go through 'change'
         if (!row?.item || isNaN(+row.qty)) return err('Item and a numeric quantity are required', 400);
-        await save('Pantry', { ...row, updated_at: A.today(), source: 'app' }); return ok();
+        await S.append('Pantry', { item: row.item, qty: row.qty, unit: row.unit, category: row.category, use_by: row.use_by || '', updated_at: A.today(), source: 'app', added_by: me }); return ok();
+      case 'change': await A.changeOwned(ctx, me, admin, tab, row, values, remove); return ok();
+      case 'deleteMember': {
+        const m = ctx.members.find(x => x._row === +row) || ctx.members.find(x => x.name === member);
+        if (!m) return err('Unknown person.', 400);
+        await S.update('Members', m._row, { ...m, deleted: '1' }); return ok();
+      }
       case 'saveSettings':
         for (const [k, v] of Object.entries(settings || {})) if (k !== 'LIVE' && ctx.settings[k] !== v) await S.setSetting(k, v);
         return ok();
@@ -114,7 +120,6 @@ export default async (req) => {
       case 'startVote': return ok(await A.runVote(true));
       case 'closeVote': return ok(await A.runClose(true));
       case 'addWish': await A.addWish(ctx, me, dish); return ok();
-      case 'removeWish': await A.removeWish(ctx, me, row, admin); return ok();
       case 'weeklyList': return ok(await A.weeklyList(ctx, me));
       case 'scanPantry': return ok(await A.scanPantry(ctx, me, image));
       case 'testPush': return ok({ sent: await A.testPush(ctx, me) });
