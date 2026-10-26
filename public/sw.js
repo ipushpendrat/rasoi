@@ -1,5 +1,5 @@
 // Offline shell + push notifications. Network first, so updates show at once; cache only when offline.
-const CACHE = 'rasoi-v5';
+const CACHE = 'rasoi-v6';
 self.addEventListener('install', e => {
   self.skipWaiting();
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(['/', '/manifest.webmanifest', '/icon-192.png'])));

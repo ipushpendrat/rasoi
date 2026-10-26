@@ -247,7 +247,9 @@ function toast(msg, bad) {
 async function api(method, body) {
   if (!key) throw Object.assign(new Error(''), { login: true });
   const r = await fetch('/api/app', { method, headers: { 'x-app-key': key || '', 'x-admin-pin': store.get('rasoi-admin') || '', 'x-member-token': store.get('rasoi-token') || '', 'content-type': 'application/json' }, body: body && JSON.stringify({ ...body, me }) });
-  const j = await r.json().catch(() => ({ error: 'The server sent an unreadable reply. Try again.' }));
+  const j = await r.json().catch(() => ({ error: r.status === 413 ? 'That file is too large. Try a smaller photo.'
+    : [502, 504].includes(r.status) || r.status >= 500 ? 'That took too long for the free server. Try again, or use a closer, simpler photo.'
+    : `The server sent an unreadable reply (${r.status}). Try again.` }));
   if (r.status === 401) { store.del('rasoi-key'); key = null; throw Object.assign(new Error('Wrong password, try again'), { login: true }); }
   if (j.pin) { store.del('rasoi-token'); pinFor = me; pinMode = 'enter'; }
   if (!r.ok) throw Object.assign(new Error(j.error || 'Request failed'), { missing: j.missing, pin: j.pin });
@@ -568,10 +570,10 @@ function viewPlan(m, i) {
 }
 const readB64 = f => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(r.result.split(',')[1]); r.onerror = no; r.readAsDataURL(f); });
 async function photoB64(f) {
-  const img = await createImageBitmap(f), k = Math.min(1, 1600 / Math.max(img.width, img.height));
+  const img = await createImageBitmap(f), k = Math.min(1, 1280 / Math.max(img.width, img.height));
   const c = document.createElement('canvas'); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
   c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
-  return c.toDataURL('image/jpeg', 0.82).split(',')[1];
+  return c.toDataURL('image/jpeg', 0.75).split(',')[1];
 }
 async function planFile(input, i) {
   const f = input.files[0]; if (!f) return;
