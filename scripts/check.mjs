@@ -1,6 +1,6 @@
 // Run: npm run check   (no network; tests the logic that decides votes, pantry numbers and allergy flags)
 import assert from 'node:assert/strict';
-import { pickWinner, deduct, mergePantry, allergyHits, tonight, buyer } from '../lib/agent.js';
+import { pickWinner, deduct, mergePantry, allergyHits, tonight, buyer, portionTotals } from '../lib/agent.js';
 
 const opts = [{ name: 'A', missing_items: 5 }, { name: 'B', missing_items: 1 }, { name: 'C', missing_items: 3 }];
 assert.equal(pickWinner(opts, [{ member: 'x', option: '1' }, { member: 'y', option: '1' }, { member: 'z', option: '3' }]).winner.name, 'A');
@@ -42,5 +42,14 @@ assert.equal(buyer([...ch, { date: 'd', member: 'B', type: 'release' }], 'd'), '
 assert.equal(buyer([...ch, { date: 'd', member: 'A', type: 'release' }], 'd'), null);
 assert.equal(buyer([...ch, { date: 'd', member: 'A', type: 'release' }, { date: 'd', member: 'B', type: 'buying' }], 'd'), 'B');
 assert.equal(buyer(ch, 'other'), null);
+
+const pctx = { family: fam, changes: [
+  { date: 'd', member: 'A', type: 'portion:roti:dinner', count: '4' }, { date: 'd', member: 'A', type: 'portion:roti:dinner', count: '3' },
+  { date: 'd', member: 'B', type: 'portion:roti:lunch', count: '0' }, { date: 'd', member: 'C', type: 'away' }, { date: 'd', member: 'D', type: 'guests', count: '1' } ] };
+const [roti] = portionTotals(pctx, [{ item: 'Rotis', per_person: 2 }], 'd');
+assert.equal(roti.by.A.dinner, 3, 'latest count wins');
+assert.equal(roti.by.C.dinner, 0, 'away person eats no dinner');
+assert.equal(roti.dinner, 3 + 2 + 0 + 2 + 2, 'A 3, B 2, C away, D 2, plus 1 guest at 2');
+assert.equal(roti.lunch, 2 + 0 + 2 + 2, 'B wants none for lunch');
 
 console.log('All checks passed');

@@ -34,6 +34,7 @@ export default async (req) => {
       return Response.json({
         ...ctx, members: ctx.members.map(({ pin_hash, ...m }) => ({ ...m, has_pin: !!pin_hash })),
         subs: ctx.subs.filter(s => !s.status).map(s => ({ member: s.member })),
+        portions: (() => { const d = ctx.days.find(x => x.date === A.today()); return A.portionTotals(ctx, A.J(d?.winner, {}).countables); })(),
         tonight: A.tonight(ctx), buyer: A.buyer(ctx.changes, A.today()), budget: A.budget(ctx),
         readiness: admin ? A.readiness(ctx) : [], today: A.today(), vapidPublicKey: process.env.VAPID_PUBLIC_KEY,
         isAdmin: admin, adminEmail: process.env.ADMIN_EMAIL || '',
@@ -43,7 +44,7 @@ export default async (req) => {
     }
   }
 
-  const { action, me, row, settings, n, comment, image, subscription, reason, type, count, items, total, category, note, messages, member, file, text, remove, pin, dish, tab, values } = await req.json();
+  const { action, me, row, settings, n, comment, image, subscription, reason, type, count, items, total, category, note, messages, member, file, text, remove, pin, dish, tab, values, from, item, meal } = await req.json();
   if (ADMIN_ONLY.has(action) && !admin) return err('Only the admin can do this. Enter the admin PIN in Setup.', 403);
   try {
     if (action === 'init') { await S.init(); return ok(); }
@@ -122,6 +123,8 @@ export default async (req) => {
       case 'addWish': await A.addWish(ctx, me, dish); return ok();
       case 'weeklyList': return ok(await A.weeklyList(ctx, me));
       case 'scanPantry': return ok(await A.scanPantry(ctx, me, image));
+      case 'suggestOption': return ok(await A.suggestOption(ctx, me, text, from));
+      case 'portion': await A.setPortion(ctx, me, item, meal, count); return ok();
       case 'testPush': return ok({ sent: await A.testPush(ctx, me) });
       default: return err('Unknown action', 400);
     }

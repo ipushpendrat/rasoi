@@ -416,7 +416,8 @@ function cookText(w, r, lang) {
   const hi = lang === 'hi', steps = (hi ? r.steps_hi : r.steps_en) || [];
   return [hi ? `*आज का खाना: ${w.name}*` : `*Today: ${w.name}*`, hi ? r.variants_hi : r.variants_en,
     r.warning ? '!! ' + r.warning : null, '', ...steps.map((x, i) => `${i + 1}. ${x}`), '',
-    (hi ? 'सामग्री: ' : 'Ingredients: ') + (r.ingredients || []).map(i => `${i.item} ${i.qty} ${i.unit}`).join(', ')].filter(x => x != null).join('\n');
+    (hi ? 'सामग्री: ' : 'Ingredients: ') + (r.ingredients || []).map(i => `${i.item} ${i.qty} ${i.unit}`).join(', '),
+    ...(data.portions || []).map(p => `${p.item}: ${hi ? `रात ${p.dinner}, कल दोपहर ${p.lunch}` : `${p.dinner} for dinner, ${p.lunch} for tomorrow's lunch`} (${Object.entries(p.by).map(([n, x]) => `${n} ${x.dinner}/${x.lunch}`).join(', ')})`)].filter(x => x != null).join('\n');
 }
 async function sendToCook(btn, text) {
   if (navigator.share) { try { await navigator.share({ text }); return; } catch (e) { if (e.name === 'AbortError') return; } }
@@ -482,7 +483,9 @@ function addSpend(e) { e.preventDefault(); act({ action: 'spend', ...Object.from
 async function billPhoto(input) {
   const f = input.files[0]; if (!f) return;
   input.disabled = true; $('#billState').textContent = 'Reading the bill...';
-  const r = await act({ action: 'bill', image: { mime: 'image/jpeg', data: await photoB64(f) } });
+  if (f.type === 'application/pdf' && f.size > 4e6) { input.disabled = false; return toast('That PDF is over 4 MB.', true); }
+  const image = f.type === 'application/pdf' ? { mime: f.type, data: await readB64(f) } : { mime: 'image/jpeg', data: await photoB64(f) };
+  const r = await act({ action: 'bill', image });
   if (r) toast(`Added ${r.count} items from ${r.store || 'the bill'} (AED ${r.total})`);
 }
 
@@ -566,20 +569,25 @@ function viewToday() {
     h += `<section class="plate">${votes ? `<div class="photo" data-dish="${esc(lead?.name)}"></div>` : ''}
       <div class="plate-head"><span class="pill-tag">${ICON.clock}Voting until 1pm${d.mode === 'off' ? ', cook off' : ''}</span>${ring()}</div>
       <div class="dish">${esc(lead?.name)}</div>
-      <p class="meta">${votes ? `Leading, ${votes} of ${data.family.length} voted` : 'No votes yet'}</p>${voters(latest)}
+      <p class="meta">For dinner tonight and lunch tomorrow. ${votes ? `Leading, ${votes} of ${data.family.length} voted.` : 'No votes yet.'}</p>${voters(latest)}
       ${data.isAdmin ? `<div class="actions"><button onclick="busy(this,'Closing...');act({action:'closeVote'},'Vote closed')">Close the vote now</button></div>` : ''}</section>`;
     rows.push(row('options', tile('list', 'orange'), 'Options', mine ? `You voted for ${esc(opts[mine - 1]?.name)}` : 'Tap to vote',
       opts.map((o, i) => `<div class="opt"><b>${i + 1}. ${esc(o.name)}</b><span>${tally[i]} vote${tally[i] === 1 ? '' : 's'}</span>
-        <span class="meta">${esc(o.summary)} About ${esc(o.cook_minutes)} min, AED ${esc(o.est_cost_aed)}, ${esc(o.missing_items)} to buy.</span>
+        <span class="meta" style="grid-column:1/-1">${o.by ? `${o.from ? `Option ${o.from} changed` : 'Suggested'} by ${esc(o.by)}. ` : ''}${esc(o.summary)} About ${esc(o.cook_minutes)} min, AED ${esc(o.est_cost_aed)}.</span>
+        ${o.have?.length ? `<span class="meta" style="grid-column:1/-1"><span class="done">At home:</span> ${esc(o.have.join(', '))}</span>` : ''}
+        ${o.buy?.length ? `<span class="meta" style="grid-column:1/-1"><span class="soon">To buy:</span> ${esc(o.buy.join(', '))}</span>` : o.have ? '<span class="meta done" style="grid-column:1/-1">Nothing to buy.</span>' : ''}
         <span class="bar"><i style="width:${data.family.length ? tally[i] / data.family.length * 100 : 0}%"></i></span>
-        <span class="choice"><button aria-pressed="${mine === i + 1}" onclick="this.disabled=true;act({action:'vote',n:${i + 1}},'Vote saved')">${mine === i + 1 ? 'Your vote' : 'Vote for this'}</button></span></div>`).join(''), !mine));
+        <span class="choice"><button aria-pressed="${mine === i + 1}" onclick="this.disabled=true;act({action:'vote',n:${i + 1}},'Vote saved')">${mine === i + 1 ? 'Your vote' : 'Vote for this'}</button>
+          ${opts.length < 6 ? `<button onclick="editOption(${i + 1})">Change it</button>` : ''}</span></div>`).join('')
+      + (opts.length < 6 ? `<form class="row" id="suggest" style="margin-top:12px" onsubmit="suggest(event)"><label style="flex:1;min-width:220px">Your own option<input name="text" maxlength="120" required placeholder="e.g. Parwal bhujia + Dal + Rice + Roti"></label>
+          <input type="hidden" name="from"><button class="primary">Add option</button></form><p class="meta" style="margin-top:6px">It's checked against allergies and the pantry, then everyone can vote for it.</p>` : ''), !mine));
   } else {
     const w = J(d.winner, {}), r = J(d.recipe, null), miss = J(d.missing, []);
     const label = { decided: 'Cooking tonight', cooked: 'Cooked', postponed: 'Moved to tomorrow', off: 'Cook is off today', skip: 'Eating out today' }[d.status] || d.status;
     h += `<section class="plate">${w.name ? `<div class="photo" data-dish="${esc(w.name)}"></div>` : ''}
       <span class="pill-tag ${['decided', 'cooked'].includes(d.status) ? 'ok' : ''}">${ICON.check}${esc(label)}</span>
       <div class="dish">${esc(w.name || (d.status === 'skip' ? 'Eating out' : 'Cook is off'))}</div>
-      ${w.summary ? `<p class="meta">${esc(w.summary)}</p>` : ''}
+      <p class="meta">${['decided', 'cooked'].includes(d.status) ? 'Dinner tonight and lunch tomorrow. ' : ''}${esc(w.summary || '')}</p>
       ${r?.warning ? `<p class="warn">${esc(r.warning)}</p>` : ''}
       <div class="actions">
         ${d.status === 'decided' ? `<button class="primary" onclick="this.disabled=true;act({action:'cooked'},'Marked as cooked. Pantry updated.')">Mark as cooked</button>` : ''}
@@ -588,10 +596,39 @@ function viewToday() {
       </div></section>`;
     if (miss.length && d.status === 'decided') rows.push(row('buy', tile('cart', 'green'), 'To buy',
       `${miss.length} item${miss.length === 1 ? '' : 's'}, ${data.buyer ? `${esc(data.buyer === me ? 'you are' : data.buyer + ' is')} buying` : 'nobody is buying yet'}`, shoppingBody(miss), !data.buyer));
+    if (data.portions?.length && ['decided', 'cooked'].includes(d.status)) rows.push(viewPortions());
     if (r) rows.push(row('recipe', tile('chef', 'purple'), 'Recipe', r.total_minutes ? `About ${esc(r.total_minutes)} minutes` : '', recipeBody(w, r, d)));
   }
   rows.push(viewTonight(d), viewRate(), viewWishes(), viewFavourites(), viewPast());
   return h + group(rows);
+}
+function editOption(n) {
+  const o = J(data.days.find(x => x.date === data.today)?.options, [])[n - 1], f = $('#suggest');
+  if (!o || !f) return;
+  f.text.value = o.name; f.from.value = n; f.text.focus(); f.scrollIntoView({ block: 'center' });
+}
+async function suggest(e) {
+  e.preventDefault();
+  const f = e.target, btn = f.querySelector('button'); busy(btn, 'Checking...');
+  const r = await act({ action: 'suggestOption', text: f.text.value, from: f.from.value || undefined });
+  if (r) toast(`Added as option ${r.n}${r.option.buy?.length ? `, ${r.option.buy.length} to buy` : ', nothing to buy'}`);
+}
+function viewPortions() {
+  const ps = data.portions, mine = ps.map(p => p.by[me] || { dinner: p.per_person, lunch: p.per_person });
+  const sub = ps.map(p => `${p.item}: ${p.dinner} dinner, ${p.lunch} lunch`).join('; ');
+  return row('portions', tile('list', 'indigo'), 'How many?', esc(sub),
+    `<p class="meta">Set your own numbers. The cook's message shows everyone's.</p>
+    ${ps.map((p, i) => `<form class="row" style="margin-top:10px" onsubmit="event.preventDefault();savePortion(this,'${esc(p.key)}')">
+      <b style="flex-basis:100%;font-size:14px">${esc(p.item)} <span class="meta">(usual ${p.per_person} each)</span></b>
+      <label style="max-width:110px">Dinner<input name="dinner" type="number" min="0" max="20" value="${mine[i].dinner}"></label>
+      <label style="max-width:110px">Lunch tomorrow<input name="lunch" type="number" min="0" max="20" value="${mine[i].lunch}"></label>
+      <button>Save</button></form>
+      <p class="meta" style="margin-top:4px">${Object.entries(p.by).map(([n, x]) => `${esc(n)} ${x.dinner}/${x.lunch}`).join(', ')}</p>`).join('')}`);
+}
+async function savePortion(f, item) {
+  busy(f.querySelector('button'), 'Saving...');
+  await api('POST', { action: 'portion', item, meal: 'dinner', count: f.dinner.value }).catch(e => toast(e.message, true));
+  await act({ action: 'portion', item, meal: 'lunch', count: f.lunch.value }, 'Saved');
 }
 function shoppingBody(miss) {
   const b = data.buyer;
@@ -699,7 +736,7 @@ function viewPantry() {
       `<ul class="todo">${soon.map(p => `<li>${esc(p.item)} <span class="soon">${esc(p.use_by)}</span></li>`).join('')}</ul><p class="meta">Suggestions use these before anything else.</p>`, true) : '',
     viewWeekly(),
     row('scan', tile('camera', 'blue'), 'Scan the fridge', scanItems ? `${scanItems.length} found, check them` : 'Photo of the fridge or a shelf',
-      `<p class="meta">You check the list before anything is added.</p><div class="actions"><label class="filebtn">${ICON.camera}Take a photo<input type="file" accept="image/*" capture="environment" onchange="scanPhoto(this)" ${me ? '' : 'disabled'}></label></div>${scanItems ? viewScan() : ''}`, !!scanItems),
+      `<p class="meta">You check the list before anything is added.</p><div class="actions"><label class="filebtn">${ICON.camera}Take or choose a photo<input type="file" accept="image/*" onchange="scanPhoto(this)" ${me ? '' : 'disabled'}></label></div>${scanItems ? viewScan() : ''}`, !!scanItems),
     row('additems', tile('plus', 'green'), 'Add items', 'One item, or many at once',
       `<form class="grid" onsubmit="addItem(event)" style="margin-top:4px">
         <label>Item<input name="item" required placeholder="e.g. toor dal"></label><label>Quantity<input name="qty" required inputmode="decimal"></label>
@@ -748,8 +785,8 @@ function viewSpend() {
       <div class="meter" role="img" aria-label="${Math.round(pct)}% of weekly budget"><i class="${spent > limit ? 'over' : ''}" style="width:${pct}%"></i></div>
       <p class="meta">Fresh items from the last 7 days, plus staples spread over ${esc(data.settings.STAPLES_SPREAD_WEEKS || 4)} weeks.</p></section>`
     + group([
-      row('bill', tile('receipt', 'blue'), 'Add a bill', 'Photo of the whole bill',
-        `<p class="meta">Items go into the pantry and the amount into the budget.</p><div class="actions"><label class="filebtn">${ICON.camera}Photo of the bill<input type="file" accept="image/*" capture="environment" onchange="billPhoto(this)" ${me ? '' : 'disabled'}></label></div><p class="meta" id="billState"></p>`),
+      row('bill', tile('receipt', 'blue'), 'Add a bill', 'Photo, screenshot or PDF',
+        `<p class="meta">Shop bill or online order: items go into the pantry and the amount into the budget.</p><div class="actions"><label class="filebtn">${ICON.camera}Upload or take a photo<input type="file" accept="image/*,application/pdf" onchange="billPhoto(this)" ${me ? '' : 'disabled'}></label></div><p class="meta" id="billState"></p>`),
       row('nobill', tile('wallet', 'teal'), 'Spent without a bill', 'Add an amount by hand',
         `<form class="grid" onsubmit="addSpend(event)"><label>Amount (AED)<input name="total" type="number" min="1" step="0.5" required></label>
           <label>Type<select name="category"><option value="fresh">fresh</option><option value="staple">staple</option></select></label>
